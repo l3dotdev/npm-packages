@@ -24,6 +24,7 @@ import {
 	type APIApplicationCommand,
 	type InteractionReplyOptions,
 	type RESTGetAPIApplicationGuildCommandsResult,
+	type RESTPostAPIChatInputApplicationCommandsJSONBody,
 	type Snowflake
 } from "discord.js";
 import { z } from "zod";
@@ -253,10 +254,20 @@ export const registerCommands = Result.fn(async function ({
 		}
 
 		logger.log(`Publishing command '${command.name}'...`);
+
+		let body: RESTPostAPIChatInputApplicationCommandsJSONBody;
+		try {
+			body = builder.toJSON();
+		} catch (error) {
+			return err("INVALID_COMMAND", {
+				command,
+				error
+			});
+		}
 		results.push(
 			Result.fromPromise(
 				rest.post(route, {
-					body: builder.toJSON()
+					body
 				})
 			)
 		);
