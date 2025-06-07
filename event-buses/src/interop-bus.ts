@@ -57,15 +57,17 @@ export class InteropBus<
 		});
 	}
 
-	public createGlobalQueue<TQueueName extends StringKeyOf<TGlobalQueues>>(queueName: TQueueName) {
+	public createGlobalQueue<const TQueueName extends StringKeyOf<TGlobalQueues>>(
+		queueName: TQueueName
+	) {
 		return this.bus.createQueue(queueName, {
 			prefix: this.prefix
 		});
 	}
 
 	public createServiceQueue<
-		TQueueName extends StringKeyOf<TServiceQueues>,
-		TService extends TServices
+		const TQueueName extends StringKeyOf<TServiceQueues>,
+		const TService extends TServices
 	>(queueName: TQueueName, service: TService) {
 		return this.bus.createQueue(this.getServiceQueueName(queueName, service), {
 			prefix: this.prefix

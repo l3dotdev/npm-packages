@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/event-buses",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "BullMQ wrapper for schedules and service interop",
 	"type": "module",
 	"main": "./build/index.js",
