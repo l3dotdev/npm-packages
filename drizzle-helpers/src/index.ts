@@ -1,8 +1,8 @@
 import { Result } from "@l3dev/result";
 import type { ExtractTablesWithRelations } from "drizzle-orm";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres/driver.js";
-import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres/session.js";
-import type { PgTransaction, PgTransactionConfig } from "drizzle-orm/pg-core/session.js";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres/driver";
+import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres/session";
+import type { PgTransaction, PgTransactionConfig } from "drizzle-orm/pg-core/session";
 
 import { InlineTransactionImpl } from "./inline-transaction.js";
 
