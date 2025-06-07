@@ -156,7 +156,7 @@ export function addSubcommands(
 	subcommands: Collection<string, CommandConfig<SlashCommandSubcommandBuilder>>
 ) {
 	for (const command of subcommands.values()) {
-		parentCommandBuilder.addSubcommand(command.define);
+		parentCommandBuilder.addSubcommand(command.define.bind(command));
 	}
 }
 
