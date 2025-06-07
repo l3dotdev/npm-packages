@@ -165,47 +165,49 @@ export function hasCommandChanged(
 	builder: SlashCommandBuilder,
 	current: Omit<APIApplicationCommand, "dm_permission">
 ) {
-	if (builder.name !== current.name) return false;
-	if (builder.description !== current.description) return false;
-	if ((builder.nsfw ?? false) !== (current.nsfw ?? false)) return false;
+	if (builder.name !== current.name) return true;
+	if (builder.description !== current.description) return true;
+	if ((builder.nsfw ?? false) !== (current.nsfw ?? false)) return true;
+
+	console.log(current);
 
 	for (const builderOption of builder.options) {
 		const json = builderOption.toJSON();
 		const currentOption = current.options?.find((opt) => opt.name === json.name);
-		if (!currentOption) return false;
+		if (!currentOption) return true;
 
-		if (json.type !== currentOption.type) return false;
-		if (json.description !== currentOption.description) return false;
-		if ((json.required ?? false) !== (currentOption.required ?? false)) return false;
+		if (json.type !== currentOption.type) return true;
+		if (json.description !== currentOption.description) return true;
+		if ((json.required ?? false) !== (currentOption.required ?? false)) return true;
 
 		if (
 			"autocomplete" in json !== "autocomplete" in currentOption ||
 			((json as { autocomplete?: boolean }).autocomplete ?? false) !==
 				((currentOption as { autocomplete?: boolean }).autocomplete ?? false)
 		) {
-			return false;
+			return true;
 		}
 
 		if (
 			"choices" in json !== "choices" in currentOption ||
 			!!(json as { choices?: [] }).choices !== !!(currentOption as { choices?: [] }).choices
 		)
-			return false;
+			return true;
 
 		if ("choices" in json && "choices" in currentOption && json.choices && currentOption.choices) {
 			for (const builderChoice of json.choices) {
 				const currentChoice = currentOption.choices.find(
 					(choice) => choice.name === builderChoice.name
 				);
-				if (!currentChoice) return false;
+				if (!currentChoice) return true;
 
-				if (builderChoice.name !== currentChoice.name) return false;
-				if (builderChoice.value !== currentChoice.value) return false;
+				if (builderChoice.name !== currentChoice.name) return true;
+				if (builderChoice.value !== currentChoice.value) return true;
 			}
 		}
 	}
 
-	return true;
+	return false;
 }
 
 type Commands = Collection<string, CommandConfig<SlashCommandBuilder>>;
@@ -248,7 +250,7 @@ export const registerCommands = Result.fn(async function ({
 		const existingCommand = existingSlashCommands.find(
 			(existingCommand) => existingCommand.name === command.name
 		);
-		if (existingCommand && hasCommandChanged(builder, existingCommand)) {
+		if (existingCommand && !hasCommandChanged(builder, existingCommand)) {
 			logger.log(`Skipping command '${command.name}', no changes`);
 			continue;
 		}
