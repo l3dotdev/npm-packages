@@ -35,7 +35,7 @@ export const getGuild = Result.fn(async function (client: Client, guildId: Snowf
 	if (cachedGuild) return ok(cachedGuild);
 
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_GUILD_FAILED" } },
+		{ onError: { type: "FETCH_GUILD_FAILED", context: { guildId } } },
 		client.guilds.fetch(guildId)
 	);
 });
@@ -45,17 +45,17 @@ export const getChannel = Result.fn(async function (client: Client, channelId: S
 	if (cachedChannel) return ok(cachedChannel);
 
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_CHANNEL_FAILED" } },
+		{ onError: { type: "FETCH_CHANNEL_FAILED", context: { channelId } } },
 		client.channels.fetch(channelId)
 	);
 });
 
-export const getGuildChannel = Result.fn(async function (guild: Guild, memberId: Snowflake) {
+export const getGuildMember = Result.fn(async function (guild: Guild, memberId: Snowflake) {
 	const cachedMember = guild.members.cache.get(memberId);
 	if (cachedMember) return ok(cachedMember);
 
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_GUILD_MEMBER_FAILED" } },
+		{ onError: { type: "FETCH_GUILD_MEMBER_FAILED", context: { guildId: guild.id, memberId } } },
 		guild.members.fetch(memberId)
 	);
 });
@@ -68,7 +68,7 @@ export const getMessage = Result.fn(async function (
 	if (cachedMessage) return ok(cachedMessage);
 
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_GUILD_MEMBER_FAILED" } },
+		{ onError: { type: "FETCH_MESSAGE_FAILED", context: { channelId: channel.id, messageId } } },
 		channel.messages.fetch(messageId)
 	);
 });
