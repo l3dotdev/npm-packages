@@ -216,6 +216,7 @@ type RegisterCommandsOptions = {
 	client: Client;
 	guildId: Snowflake;
 	commands: Commands;
+	remove?: string[];
 	logger?: ILogger;
 };
 
@@ -224,6 +225,7 @@ export const registerCommands = Result.fn(async function ({
 	client,
 	guildId,
 	commands,
+	remove,
 	logger = defaultLogger
 }: RegisterCommandsOptions) {
 	const route = Routes.applicationGuildCommands(client.user!.id, guildId);
@@ -241,9 +243,30 @@ export const registerCommands = Result.fn(async function ({
 		(command) => command.type === ApplicationCommandType.ChatInput
 	);
 
+	const results: Promise<ReturnResult<any, any>>[] = [];
+	if (remove) {
+		logger.log(`Removing commands for guild '${guildId}'...`);
+
+		for (const commandName of remove) {
+			const existingCommand = existingSlashCommands.find(
+				(existingCommand) => existingCommand.name === commandName
+			);
+			if (!existingCommand) {
+				logger.log(`Skipping command '${commandName}' to remove, not found`);
+				continue;
+			}
+
+			logger.log(`Removing command '${commandName}'...`);
+			results.push(
+				Result.fromPromise(
+					rest.delete(Routes.applicationGuildCommand(client.user!.id, guildId, existingCommand.id))
+				)
+			);
+		}
+	}
+
 	logger.log(`Publishing commands for guild '${guildId}'...`);
 
-	const results: Promise<ReturnResult<any, any>>[] = [];
 	for (const command of commands.values()) {
 		const builder = command.define(new SlashCommandBuilder());
 
