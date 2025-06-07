@@ -1,3 +1,5 @@
+import type { ILogger } from "@l3dev/logger";
+import { logger as defaultLogger } from "@l3dev/logger";
 import {
 	err,
 	Result,
@@ -27,7 +29,6 @@ import {
 import { z } from "zod";
 
 import { mergeMessageFlags } from "./general.js";
-import type { Logger } from "./types.js";
 
 type CommandExecuteFn =
 	| ResultFn<[ChatInputCommandInteraction]>
@@ -95,13 +96,13 @@ export function defineSubcommand(config: CommandConfig<SlashCommandSubcommandBui
 type LoadOptions<Builder> = {
 	modules: Record<string, CommandModule<Builder>>;
 	parentCommandName?: string;
-	logger: Logger;
+	logger?: ILogger;
 };
 
 function load<Builder extends SlashCommandBuilder | SlashCommandSubcommandBuilder>({
 	modules,
 	parentCommandName,
-	logger
+	logger = defaultLogger
 }: LoadOptions<Builder>) {
 	const commands = new Collection<string, CommandConfig<Builder>>();
 
@@ -123,23 +124,23 @@ function load<Builder extends SlashCommandBuilder | SlashCommandSubcommandBuilde
 
 type LoadCommandsOptions = {
 	getModules: <T>() => Record<string, T>;
-	logger?: Logger;
+	logger?: ILogger;
 };
 
-export function loadCommands({ getModules, logger = console }: LoadCommandsOptions) {
+export function loadCommands({ getModules, logger = defaultLogger }: LoadCommandsOptions) {
 	return load({ modules: getModules<CommandModule<SlashCommandBuilder>>(), logger });
 }
 
 type LoadSubcommandsOptions = {
 	getModules: <T>() => Record<string, T>;
 	parentCommandName: string;
-	logger?: Logger;
+	logger?: ILogger;
 };
 
 export function loadSubcommands({
 	getModules,
 	parentCommandName,
-	logger = console
+	logger = defaultLogger
 }: LoadSubcommandsOptions) {
 	const commands = load({
 		modules: getModules<CommandModule<SlashCommandSubcommandBuilder>>(),
@@ -212,7 +213,7 @@ type RegisterCommandsOptions = {
 	client: Client;
 	guildId: Snowflake;
 	commands: Commands;
-	logger?: Logger;
+	logger?: ILogger;
 };
 
 export const registerCommands = Result.fn(async function ({
@@ -220,7 +221,7 @@ export const registerCommands = Result.fn(async function ({
 	client,
 	guildId,
 	commands,
-	logger = console
+	logger = defaultLogger
 }: RegisterCommandsOptions) {
 	const route = Routes.applicationGuildCommands(client.user!.id, guildId);
 

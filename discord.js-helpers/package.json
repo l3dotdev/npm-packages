@@ -28,5 +28,8 @@
 	"dependencies": {
 		"@l3dev/result": "^0.1.3",
 		"zod": "^3.25.56"
+	},
+	"devDependencies": {
+		"@l3dev/logger": "workspace:^"
 	}
 }

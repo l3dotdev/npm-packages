@@ -1,10 +1,10 @@
+import type { ILogger } from "@l3dev/logger";
+import { logger as defaultLogger } from "@l3dev/logger";
 import { NONE, type ResultAsyncFn, type ResultFn } from "@l3dev/result";
 // @ts-expect-error Exports don't work for workspace packages
 import { ReturnResultSchema } from "@l3dev/result/zod";
 import { Client, Collection, Events, type ClientEvents } from "discord.js";
 import { z } from "zod";
-
-import type { Logger } from "./types";
 
 type EventListenerFn<Event extends keyof ClientEvents> =
 	| ResultFn<ClientEvents[Event]>
@@ -37,10 +37,13 @@ export function defineEventListener<Event extends keyof ClientEvents>(
 
 type LoadEventListenersOptions = {
 	getModules: <T>() => Record<string, T>;
-	logger?: Logger;
+	logger?: ILogger;
 };
 
-export function loadEventListeners({ getModules, logger = console }: LoadEventListenersOptions) {
+export function loadEventListeners({
+	getModules,
+	logger = defaultLogger
+}: LoadEventListenersOptions) {
 	const modules = getModules<EventListenerModule<any>>();
 	const eventListeners = new Collection<string, EventListenerConfig<any>>();
 
@@ -62,13 +65,13 @@ type EventListeners = Collection<string, EventListenerConfig<any>>;
 type RegisterEventListenersOptions = {
 	client: Client;
 	eventListeners: EventListeners;
-	logger?: Logger;
+	logger?: ILogger;
 };
 
 export function registerEventListeners({
 	client,
 	eventListeners,
-	logger = console
+	logger = defaultLogger
 }: RegisterEventListenersOptions) {
 	for (const [file, eventListener] of eventListeners.entries()) {
 		const wrappedListener = async (...args: any[]) => {

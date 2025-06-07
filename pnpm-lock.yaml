@@ -68,6 +68,10 @@ importers:
       zod:
         specifier: ^3.25.56
         version: 3.25.56
+    devDependencies:
+      '@l3dev/logger':
+        specifier: workspace:^
+        version: link:../logger
 
   event-buses:
     dependencies:
