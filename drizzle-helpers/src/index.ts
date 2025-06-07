@@ -9,10 +9,13 @@ import { InlineTransactionImpl } from "./inline-transaction.js";
 export * from "./inline-transaction.js";
 
 export type WrappedDrizzle<TSchema extends Record<string, unknown>> = ReturnType<
-	typeof wrapDrizzle<TSchema>
+	typeof wrapDrizzle<TSchema, NodePgDatabase<TSchema>>
 >;
 
-export function wrapDrizzle<TSchema extends Record<string, unknown>>(db: NodePgDatabase<TSchema>) {
+export function wrapDrizzle<
+	TSchema extends Record<string, unknown>,
+	TDatabase extends NodePgDatabase<TSchema>
+>(db: TDatabase) {
 	return Object.assign(db, {
 		inlineTransaction(config?: PgTransactionConfig) {
 			return InlineTransactionImpl.create<TSchema>(db, config);
