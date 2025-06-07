@@ -75,10 +75,14 @@ export function registerEventListeners({
 }: RegisterEventListenersOptions) {
 	for (const [file, eventListener] of eventListeners.entries()) {
 		const wrappedListener = async (...args: any[]) => {
-			const result = await eventListener.listener(...args);
-			if (result.ok) return;
+			try {
+				const result = await eventListener.listener(...args);
+				if (result.ok) return;
 
-			logger.error(`Error in event listener ${file}:`, result);
+				logger.error(`Error in event listener ${file}:`, result);
+			} catch (error) {
+				logger.fatal(`Error in event listener ${file}:`, error);
+			}
 		};
 
 		if (eventListener.once) {
