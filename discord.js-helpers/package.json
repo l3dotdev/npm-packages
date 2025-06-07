@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/discord.js-helpers",
-	"version": "0.4.6",
+	"version": "0.4.7",
 	"description": "Helpers for working with discord.js and building bots",
 	"type": "module",
 	"main": "./build/index.js",

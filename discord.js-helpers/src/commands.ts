@@ -243,6 +243,8 @@ export const registerCommands = Result.fn(async function ({
 		(command) => command.type === ApplicationCommandType.ChatInput
 	);
 
+	console.log(existingCommands);
+
 	const results: Promise<ReturnResult<any, any>>[] = [];
 	if (remove) {
 		logger.log(`Removing commands for guild '${guildId}'...`);
