@@ -1,0 +1,24 @@
+{
+	"name": "@l3dev/mixins",
+	"version": "0.1.1",
+	"description": "Convenient polyfills/mixins for javascript built-ins",
+	"type": "module",
+	"main": "./build/index.js",
+	"types": "./build/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./build/index.d.ts",
+			"import": "./build/index.js"
+		}
+	},
+	"files": [
+		"build"
+	],
+	"scripts": {
+		"build": "tsc",
+		"package": "pnpm build",
+		"prepublishOnly": "pnpm package"
+	},
+	"author": "l3dotdev",
+	"license": "MIT"
+}

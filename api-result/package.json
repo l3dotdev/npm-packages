@@ -1,0 +1,27 @@
+{
+	"name": "@l3dev/api-result",
+	"version": "0.1.3",
+	"description": "Result objects for API responses",
+	"type": "module",
+	"main": "./build/index.js",
+	"types": "./build/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./build/index.d.ts",
+			"import": "./build/index.js"
+		}
+	},
+	"files": [
+		"build"
+	],
+	"scripts": {
+		"build": "tsc",
+		"package": "pnpm build",
+		"prepublishOnly": "pnpm package"
+	},
+	"author": "l3dotdev",
+	"license": "MIT",
+	"dependencies": {
+		"@l3dev/result": "^0.1.3"
+	}
+}

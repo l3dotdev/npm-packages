@@ -1,0 +1,9 @@
+{
+	"extends": "../tsconfig.package.json",
+	"compilerOptions": {
+		"outDir": "build",
+		"lib": ["dom", "dom.iterable", "esnext"]
+	},
+	"include": ["src/**/*.js", "src/**/*.ts"],
+	"exclude": ["node_modules/**"]
+}
