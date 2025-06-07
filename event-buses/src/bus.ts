@@ -61,11 +61,9 @@ export type TreeJobConfig = {
 	queuesOptions?: FlowQueuesOpts;
 };
 
-export type InferQueueData<TQueue> = TQueue extends Queue<any, any, any, infer D> ? D : never;
-export type InferQueueResult<TQueue> =
-	TQueue extends Queue<any, any, any, any, infer R> ? R : never;
-export type InferQueueName<TQueue> =
-	TQueue extends Queue<any, any, any, any, any, infer N> ? N : never;
+export type InferQueueData<TQueue> = TQueue extends Queue<infer D, any, any> ? D : never;
+export type InferQueueResult<TQueue> = TQueue extends Queue<any, infer R, any> ? R : never;
+export type InferQueueName<TQueue> = TQueue extends Queue<any, any, infer N> ? N : never;
 
 export class Bus {
 	private readonly config: BusConfig;

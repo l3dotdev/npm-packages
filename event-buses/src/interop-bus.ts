@@ -60,7 +60,7 @@ export class InteropBus<
 	public createGlobalQueue<const TQueueName extends StringKeyOf<TGlobalQueues>>(
 		queueName: TQueueName
 	) {
-		return this.bus.createQueue(queueName, {
+		return this.bus.createQueue(queueName as `${TQueueName}`, {
 			prefix: this.prefix
 		});
 	}
@@ -77,8 +77,8 @@ export class InteropBus<
 	public createGlobalInteropWorker<
 		TQueue extends Queue<any, any, StringKeyOf<TGlobalQueues>>,
 		TQueueName extends
-			StringKeyOf<TGlobalQueues> = InferQueueName<TQueue> extends StringKeyOf<TGlobalQueues>
-			? InferQueueName<TQueue>
+			StringKeyOf<TGlobalQueues> = InferQueueName<TQueue> extends `${infer T extends StringKeyOf<TGlobalQueues>}`
+			? T
 			: never,
 		TQueueTypes extends TGlobalQueues[TQueueName] = TGlobalQueues[TQueueName]
 	>(
