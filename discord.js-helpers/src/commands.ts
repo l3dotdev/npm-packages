@@ -169,8 +169,6 @@ export function hasCommandChanged(
 	if (builder.description !== current.description) return true;
 	if ((builder.nsfw ?? false) !== (current.nsfw ?? false)) return true;
 
-	console.log(current);
-
 	for (const builderOption of builder.options) {
 		const json = builderOption.toJSON();
 		const currentOption = current.options?.find((opt) => opt.name === json.name);
@@ -242,8 +240,6 @@ export const registerCommands = Result.fn(async function ({
 	const existingSlashCommands = existingCommands.filter(
 		(command) => command.type === ApplicationCommandType.ChatInput
 	);
-
-	console.log(existingCommands);
 
 	const results: Promise<ReturnResult<any, any>>[] = [];
 	if (remove) {

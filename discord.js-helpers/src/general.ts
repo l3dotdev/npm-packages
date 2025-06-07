@@ -2,6 +2,7 @@ import { ok, Result } from "@l3dev/result";
 import {
 	BitField,
 	Client,
+	DiscordAPIError,
 	Guild,
 	MessageFlags,
 	type BitFieldResolvable,
@@ -67,8 +68,19 @@ export const getMessage = Result.fn(async function (
 	const cachedMessage = channel.messages.cache.get(messageId);
 	if (cachedMessage) return ok(cachedMessage);
 
-	return await Result.fromPromise(
+	const fetchResult = await Result.fromPromise(
 		{ onError: { type: "FETCH_MESSAGE_FAILED", context: { channelId: channel.id, messageId } } },
 		channel.messages.fetch(messageId)
 	);
+
+	if (!fetchResult.ok) {
+		if (
+			fetchResult.context.error instanceof DiscordAPIError &&
+			fetchResult.context.error.code === 10008
+		) {
+			return ok(null);
+		}
+	}
+
+	return fetchResult;
 });
