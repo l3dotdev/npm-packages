@@ -29,7 +29,7 @@ import {
 } from "discord.js";
 import { z } from "zod";
 
-import { mergeMessageFlags } from "./general.js";
+import { mergeMessageFlags } from "./merge.js";
 
 type CommandExecuteFn =
 	| ResultFn<[ChatInputCommandInteraction]>

@@ -1,35 +1,5 @@
 import { ok, Result } from "@l3dev/result";
-import {
-	BitField,
-	Client,
-	DiscordAPIError,
-	Guild,
-	MessageFlags,
-	type BitFieldResolvable,
-	type MessageFlagsString,
-	type Snowflake,
-	type TextBasedChannel
-} from "discord.js";
-
-export function mergeMessageFlags<TFlag extends MessageFlagsString, TType extends MessageFlags>(
-	...flags: (BitFieldResolvable<TFlag, TType> | null | undefined)[]
-) {
-	const mergedFlags: (TFlag | TType | `${bigint}`)[] = [];
-
-	for (const flag of flags) {
-		if (!flag) continue;
-
-		if (Array.isArray(flag)) {
-			mergedFlags.push(...flag);
-		} else if (flag instanceof BitField) {
-			mergedFlags.push(flag.bitfield);
-		} else {
-			mergedFlags.push(flag as TFlag | TType | `${bigint}`);
-		}
-	}
-
-	return mergedFlags;
-}
+import { Client, DiscordAPIError, Guild, type Snowflake, type TextBasedChannel } from "discord.js";
 
 export const getGuild = Result.fn(async function (client: Client, guildId: Snowflake) {
 	const cachedGuild = client.guilds.cache.get(guildId);
