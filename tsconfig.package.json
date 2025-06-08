@@ -18,6 +18,7 @@
 		"strictNullChecks": true,
 		"stripInternal": true,
 		"verbatimModuleSyntax": true,
-		"sourceMap": true
+		"sourceMap": true,
+		"inlineSources": true
 	}
 }

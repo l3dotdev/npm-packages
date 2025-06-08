@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/api-result",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "Result objects for API responses",
 	"type": "module",
 	"main": "./build/index.js",
@@ -22,6 +22,6 @@
 	"author": "l3dotdev",
 	"license": "MIT",
 	"dependencies": {
-		"@l3dev/result": "^0.2.0"
+		"@l3dev/result": "^0.2.1"
 	}
 }
