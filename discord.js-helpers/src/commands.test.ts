@@ -8,7 +8,7 @@ import {
 	defineSubcommand,
 	SubcommandConfigSchema,
 	type CommandConfig
-} from "./commands";
+} from "./commands.js";
 
 {
 	const command = defineCommand({
