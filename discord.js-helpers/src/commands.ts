@@ -301,14 +301,13 @@ export const registerCommands = Result.fn(async function ({
 
 export type CommandExecutorConfig = {
 	getErrorMessage: (
+		message: string,
 		err: Err<any, any>,
 		interaction: ChatInputCommandInteraction
 	) => ReturnResult<InteractionReplyOptions, any>;
 };
 
-export type CommandExecutor = ReturnType<typeof createCommandExecutor>;
-
-type CommandExecutorResult =
+export type CommandExecuteResult =
 	| Ok<any>
 	| Err<
 			"COMMAND_FAILED",
@@ -319,56 +318,65 @@ type CommandExecutorResult =
 	| Err<"REPLY_NOT_FOUND_FAILED", { error: Error }>
 	| Err<any, any>;
 
+export type CommandExecutor = ReturnType<typeof createCommandExecutor>;
+
 export const createCommandExecutor = function (config: CommandExecutorConfig) {
-	return Result.fn(async function (
-		command: CommandConfig<SlashCommandBuilder> | CommandConfig<SlashCommandSubcommandBuilder>,
-		interaction: ChatInputCommandInteraction
-	): Promise<CommandExecutorResult> {
-		const commandName = command.parent?.name ?? command.name;
-		const subcommandName = command.parent ? command.name : undefined;
+	return {
+		...config,
+		execute: Result.fn(async function (
+			command: CommandConfig<SlashCommandBuilder> | CommandConfig<SlashCommandSubcommandBuilder>,
+			interaction: ChatInputCommandInteraction
+		): Promise<CommandExecuteResult> {
+			const commandName = command.parent?.name ?? command.name;
+			const subcommandName = command.parent ? command.name : undefined;
 
-		let result;
-		try {
-			result = await command.execute(interaction);
-		} catch (error) {
-			result = err("COMMAND_FAILED", {
-				command: commandName,
-				subcommand: subcommandName,
-				interactionId: interaction.id,
-				error
-			});
-		}
-
-		if (!result.ok) {
-			const errorMessageResult = config.getErrorMessage(result, interaction);
-			if (!errorMessageResult.ok) {
-				return errorMessageResult;
+			let result;
+			try {
+				result = await command.execute(interaction);
+			} catch (error) {
+				result = err("COMMAND_FAILED", {
+					command: commandName,
+					subcommand: subcommandName,
+					interactionId: interaction.id,
+					error
+				});
 			}
 
-			const errorMessage = errorMessageResult.value;
-			const errorFlags = mergeMessageFlags(MessageFlags.Ephemeral, errorMessage.flags);
+			if (!result.ok) {
+				const errorMessageResult = config.getErrorMessage(
+					"Error while executing command",
+					result,
+					interaction
+				);
+				if (!errorMessageResult.ok) {
+					return errorMessageResult;
+				}
 
-			if (interaction.replied || interaction.deferred) {
+				const errorMessage = errorMessageResult.value;
+				const errorFlags = mergeMessageFlags(MessageFlags.Ephemeral, errorMessage.flags);
+
+				if (interaction.replied || interaction.deferred) {
+					return await Result.fromPromise(
+						{ onError: { type: "REPLY_ERROR_FAILED" } },
+						interaction.followUp({
+							...errorMessage,
+							flags: errorFlags
+						})
+					);
+				}
+
 				return await Result.fromPromise(
 					{ onError: { type: "REPLY_ERROR_FAILED" } },
-					interaction.followUp({
+					interaction.reply({
 						...errorMessage,
 						flags: errorFlags
 					})
 				);
 			}
 
-			return await Result.fromPromise(
-				{ onError: { type: "REPLY_ERROR_FAILED" } },
-				interaction.reply({
-					...errorMessage,
-					flags: errorFlags
-				})
-			);
-		}
-
-		return result;
-	});
+			return result;
+		})
+	};
 };
 
 export type SubcommandExecutorConfig = {
@@ -428,6 +436,6 @@ export function createSubcommandExecutor({
 			});
 		}
 
-		return commandExecutor(subcommand, interaction);
+		return commandExecutor.execute(subcommand, interaction);
 	};
 }
