@@ -3,7 +3,7 @@ import type { Guild, GuildChannelResolvable, GuildMember, PermissionFlagsBits } 
 
 type HasDiscordPermissionsContext = {
 	guild: Guild;
-	channel?: GuildChannelResolvable;
+	channel?: GuildChannelResolvable | null;
 };
 
 export async function hasDiscordPermissions(
