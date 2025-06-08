@@ -44,7 +44,7 @@ export type CommandConfig<Builder> = {
 	? { subcommands?: Collection<string, CommandConfig<SlashCommandSubcommandBuilder>> }
 	: object);
 
-type CommandModule<Builder> = {
+export type CommandModule<Builder> = {
 	default: CommandConfig<Builder>;
 };
 

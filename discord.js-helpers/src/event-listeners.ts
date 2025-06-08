@@ -16,7 +16,7 @@ export type EventListenerConfig<Event extends keyof ClientEvents> = {
 	listener: EventListenerFn<Event>;
 };
 
-type EventListenerModule<Event extends keyof ClientEvents> = {
+export type EventListenerModule<Event extends keyof ClientEvents> = {
 	default: EventListenerConfig<Event>;
 };
 
