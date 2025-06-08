@@ -1,5 +1,19 @@
 import { ok, Result } from "@l3dev/result";
-import { Client, DiscordAPIError, Guild, type Snowflake, type TextBasedChannel } from "discord.js";
+import {
+	Client,
+	DiscordAPIError,
+	Guild,
+	type FetchGuildsOptions,
+	type Snowflake,
+	type TextBasedChannel
+} from "discord.js";
+
+export const getGuilds = Result.fn(async function (client: Client, options?: FetchGuildsOptions) {
+	return await Result.fromPromise(
+		{ onError: { type: "FETCH_GUILDS_FAILED", context: { options } } },
+		client.guilds.fetch(options)
+	);
+});
 
 export const getGuild = Result.fn(async function (client: Client, guildId: Snowflake) {
 	const cachedGuild = client.guilds.cache.get(guildId);
