@@ -2,7 +2,11 @@ import { NONE } from "@l3dev/result";
 import { Events } from "discord.js";
 import type { z } from "zod";
 
-import { defineEventListener, EventListenerConfigSchema, type EventListenerConfig } from "./events";
+import {
+	defineEventListener,
+	EventListenerConfigSchema,
+	type EventListenerConfig
+} from "./event-listeners.js";
 
 {
 	const onListener = defineEventListener({
