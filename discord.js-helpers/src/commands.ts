@@ -357,7 +357,7 @@ export const createCommandExecutor = function (config: CommandExecutorConfig) {
 
 				if (interaction.replied || interaction.deferred) {
 					return await Result.fromPromise(
-						{ onError: { type: "REPLY_ERROR_FAILED" } },
+						{ onError: { type: "FOLLOWUP_ERROR_FAILED" } },
 						interaction.followUp({
 							...errorMessage,
 							flags: errorFlags
