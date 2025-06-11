@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/drizzle-helpers",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Drizzle database wrapper and helpers",
 	"type": "module",
 	"main": "./build/index.js",
