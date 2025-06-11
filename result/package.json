@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/result",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Type-safe result-based error handling",
 	"type": "module",
 	"main": "./build/index.js",
@@ -16,8 +16,7 @@
 		}
 	},
 	"files": [
-		"build",
-		"README.md"
+		"build"
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
