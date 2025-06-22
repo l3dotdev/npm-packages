@@ -35,7 +35,7 @@ result.ok; // true
 result.value; // 42
 ```
 
-> Use `NONE` as a shorthand for a null ok result, it is equivalent to `Ok<null>`
+> Use `NONE` for a void ok result: `Ok<void>`
 
 ### `err`
 
