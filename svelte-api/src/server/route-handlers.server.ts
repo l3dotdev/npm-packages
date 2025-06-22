@@ -1,5 +1,5 @@
-import { redirect, type RequestHandler } from "@sveltejs/kit";
 import { ApiResult, type ResponseResult } from "@l3dev/api-result";
+import { redirect, type RequestHandler } from "@sveltejs/kit";
 import type { z } from "zod";
 
 import type { Endpoint, Route, RouteAny } from "../types.js";

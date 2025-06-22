@@ -1,5 +1,5 @@
-import type { RequestEvent } from "@sveltejs/kit";
 import type { ResponseResult } from "@l3dev/api-result";
+import type { RequestEvent } from "@sveltejs/kit";
 import type { z, ZodTypeAny } from "zod";
 
 export type EndpointRequest<
