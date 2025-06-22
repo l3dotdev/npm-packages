@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/mixins",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"description": "Convenient polyfills/mixins for javascript built-ins",
 	"type": "module",
 	"main": "./build/index.js",
@@ -20,5 +20,10 @@
 		"prepublishOnly": "pnpm package"
 	},
 	"author": "l3dotdev",
-	"license": "MIT"
+	"license": "MIT",
+	"homepage": "https://github.com/l3dotdev/npm-packages/tree/main/mixins",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/l3dotdev/npm-packages.git"
+	}
 }

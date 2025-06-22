@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/api-result",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"description": "Result objects for API responses",
 	"type": "module",
 	"main": "./build/index.js",
@@ -21,6 +21,11 @@
 	},
 	"author": "l3dotdev",
 	"license": "MIT",
+	"homepage": "https://github.com/l3dotdev/npm-packages/tree/main/api-result",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/l3dotdev/npm-packages.git"
+	},
 	"dependencies": {
 		"@l3dev/result": "^0.3.0"
 	}

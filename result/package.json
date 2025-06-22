@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/result",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Type-safe result-based error handling",
 	"type": "module",
 	"main": "./build/index.js",
@@ -25,6 +25,11 @@
 	},
 	"author": "l3dotdev",
 	"license": "MIT",
+	"homepage": "https://github.com/l3dotdev/npm-packages/tree/main/result",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/l3dotdev/npm-packages.git"
+	},
 	"dependencies": {
 		"zod": "^3.25.56"
 	}

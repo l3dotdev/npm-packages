@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/svelte-api",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"description": "A type-safe result-based API builder for SvelteKit",
 	"type": "module",
 	"main": "./build/index.js",
@@ -30,6 +30,11 @@
 	},
 	"author": "l3dotdev",
 	"license": "MIT",
+	"homepage": "https://github.com/l3dotdev/npm-packages/tree/main/svelte-api",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/l3dotdev/npm-packages.git"
+	},
 	"peerDependencies": {
 		"@sveltejs/kit": "^2.0.0"
 	},
