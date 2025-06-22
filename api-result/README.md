@@ -1,3 +1,5 @@
+# api-result
+
 ## Description
 
 An extension of [@l3dev/result](https://www.npmjs.com/package/@l3dev/result) for creating result shaped API responses.

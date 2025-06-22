@@ -1,3 +1,5 @@
+# result
+
 ## Description
 
 A `Result` based error handling library. Inspired by Rust's `Result` type and [neverthrow](https://www.npmjs.com/package/neverthrow).

@@ -1,4 +1,4 @@
-## Mixins
+# mixins
 
 ### `String.prototype.toTitleCase`
 
