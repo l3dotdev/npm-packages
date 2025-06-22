@@ -54,13 +54,13 @@ importers:
   api-result:
     dependencies:
       '@l3dev/result':
-        specifier: ^0.2.1
+        specifier: ^0.3.0
         version: link:../result
 
   discord.js-helpers:
     dependencies:
       '@l3dev/result':
-        specifier: ^0.2.1
+        specifier: ^0.3.0
         version: link:../result
       discord.js:
         specifier: ^14.19.0
@@ -80,7 +80,7 @@ importers:
         version: link:../logger
       '@l3dev/result':
         specifier: ^0.2.1
-        version: link:../result
+        version: 0.2.3
       drizzle-orm:
         specifier: ^0.40.1
         version: 0.40.1
@@ -114,7 +114,7 @@ importers:
         version: link:../api-result
       '@l3dev/result':
         specifier: ^0.2.1
-        version: link:../result
+        version: 0.2.3
       zod:
         specifier: ^3.25.56
         version: 3.25.56
@@ -394,6 +394,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@l3dev/result@0.2.3':
+    resolution: {integrity: sha512-adSmkUUUHJNbm4BBlP+FFL8oSOsDC/att6P3kYYqyhS9sctYidVoDU4PQO6BlMjXgq8M8zrSFNqbZlCd48wW8g==}
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     resolution: {integrity: sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw==}
@@ -2394,6 +2397,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@l3dev/result@0.2.3':
+    dependencies:
+      zod: 3.25.56
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     optional: true

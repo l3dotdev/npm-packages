@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/discord.js-helpers",
-	"version": "0.8.4",
+	"version": "0.8.5",
 	"description": "Helpers for working with discord.js and building bots",
 	"type": "module",
 	"main": "./build/index.js",
@@ -26,10 +26,10 @@
 		"discord.js": "^14.19.0"
 	},
 	"dependencies": {
-		"@l3dev/result": "^0.2.1",
+		"@l3dev/result": "^0.3.0",
 		"zod": "^3.25.56"
 	},
 	"devDependencies": {
-		"@l3dev/logger": "^0.2.1"
+		"@l3dev/logger": "^0.2.2"
 	}
 }

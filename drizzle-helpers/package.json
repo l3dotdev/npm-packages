@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/drizzle-helpers",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Drizzle database wrapper and helpers",
 	"type": "module",
 	"main": "./build/index.js",
@@ -26,8 +26,8 @@
 	"author": "l3dotdev",
 	"license": "MIT",
 	"dependencies": {
-		"@l3dev/logger": "^0.2.1",
-		"@l3dev/result": "^0.2.1",
+		"@l3dev/logger": "^0.2.2",
+		"@l3dev/result": "^0.3.0",
 		"drizzle-orm": "^0.40.1"
 	}
 }
