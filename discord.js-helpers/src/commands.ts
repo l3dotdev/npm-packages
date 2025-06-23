@@ -23,6 +23,7 @@ import {
 	SlashCommandSubcommandBuilder,
 	type APIApplicationCommand,
 	type InteractionReplyOptions,
+	type RESTGetAPIApplicationCommandsResult,
 	type RESTGetAPIApplicationGuildCommandsResult,
 	type RESTPostAPIChatInputApplicationCommandsJSONBody,
 	type Snowflake
@@ -41,7 +42,10 @@ export type CommandConfig<Builder> = {
 	define: (builder: Builder) => Builder;
 	execute: CommandExecuteFn;
 } & (Builder extends SlashCommandBuilder
-	? { subcommands?: Collection<string, CommandConfig<SlashCommandSubcommandBuilder>> }
+	? {
+			global?: boolean;
+			subcommands?: Collection<string, CommandConfig<SlashCommandSubcommandBuilder>>;
+		}
 	: object);
 
 export type CommandModule<Builder> = {
@@ -212,41 +216,122 @@ type Commands = Collection<string, CommandConfig<SlashCommandBuilder>>;
 type RegisterCommandsOptions = {
 	rest: REST;
 	client: Client;
-	guildId: Snowflake;
 	commands: Commands;
 	remove?: string[];
 	logger?: ILogger;
 };
 
-export const registerCommands = Result.fn(async function ({
+export const registerGlobalCommands = Result.fn(async function ({
+	rest,
+	client,
+	commands,
+	remove,
+	logger = defaultLogger
+}: RegisterCommandsOptions) {
+	const globalRoute = Routes.applicationCommands(client.user!.id);
+
+	const existingGlobalCommandsResult = await Result.fromPromise(
+		{ onError: { type: "FAILED_GET_GLOBAL_COMMANDS" } },
+		rest.get(globalRoute)
+	);
+	if (!existingGlobalCommandsResult.ok) {
+		return existingGlobalCommandsResult;
+	}
+
+	const existingGlobalCommands = (
+		existingGlobalCommandsResult.value as RESTGetAPIApplicationCommandsResult
+	).filter((command) => command.type === ApplicationCommandType.ChatInput);
+
+	const results: Promise<ReturnResult<any, any>>[] = [];
+	if (remove) {
+		logger.log(`Removing global commands...`);
+
+		for (const commandName of remove) {
+			const existingCommand = existingGlobalCommands.find(
+				(existingCommand) => existingCommand.name === commandName
+			);
+			if (!existingCommand) {
+				logger.log(`Skipping command '${commandName}' to remove, not found`);
+				continue;
+			}
+
+			logger.log(`Removing command '${commandName}'...`);
+			results.push(
+				Result.fromPromise(
+					rest.delete(Routes.applicationCommand(client.user!.id, existingCommand.id))
+				)
+			);
+		}
+	}
+
+	logger.log(`Publishing global commands...`);
+
+	for (const command of commands.values()) {
+		const builder = command.define(new SlashCommandBuilder());
+
+		const existingCommand = existingGlobalCommands.find(
+			(existingCommand) => existingCommand.name === command.name
+		);
+		if (existingCommand && !hasCommandChanged(builder, existingCommand)) {
+			logger.log(`Skipping command '${command.name}', no changes`);
+			continue;
+		}
+
+		logger.log(`Publishing command '${command.name}'...`);
+
+		let body: RESTPostAPIChatInputApplicationCommandsJSONBody;
+		try {
+			body = builder.toJSON();
+		} catch (error) {
+			return err("INVALID_COMMAND", {
+				command,
+				error
+			});
+		}
+		results.push(
+			Result.fromPromise(
+				rest.post(globalRoute, {
+					body
+				})
+			)
+		);
+	}
+
+	return await Result.allAsync(...results);
+});
+
+type RegisterGuildCommandsOptions = RegisterCommandsOptions & {
+	guildId: Snowflake;
+};
+
+export const registerGuildCommands = Result.fn(async function ({
 	rest,
 	client,
 	guildId,
 	commands,
 	remove,
 	logger = defaultLogger
-}: RegisterCommandsOptions) {
-	const route = Routes.applicationGuildCommands(client.user!.id, guildId);
+}: RegisterGuildCommandsOptions) {
+	const guildRoute = Routes.applicationGuildCommands(client.user!.id, guildId);
 
-	const existingCommandsResult = await Result.fromPromise(
+	const existingGuildCommandsResult = await Result.fromPromise(
 		{ onError: { type: "FAILED_GET_COMMANDS" } },
-		rest.get(route)
+		rest.get(guildRoute)
 	);
-	if (!existingCommandsResult.ok) {
-		return existingCommandsResult;
+	if (!existingGuildCommandsResult.ok) {
+		return existingGuildCommandsResult;
 	}
 
-	const existingCommands = existingCommandsResult.value as RESTGetAPIApplicationGuildCommandsResult;
-	const existingSlashCommands = existingCommands.filter(
-		(command) => command.type === ApplicationCommandType.ChatInput
-	);
+	const existingGuildCommands = (
+		existingGuildCommandsResult.value as RESTGetAPIApplicationGuildCommandsResult
+	).filter((command) => command.type === ApplicationCommandType.ChatInput);
 
 	const results: Promise<ReturnResult<any, any>>[] = [];
 	if (remove) {
 		logger.log(`Removing commands for guild '${guildId}'...`);
 
 		for (const commandName of remove) {
-			const existingCommand = existingSlashCommands.find(
+			const existingCommand = existingGuildCommands.find(
 				(existingCommand) => existingCommand.name === commandName
 			);
 			if (!existingCommand) {
@@ -268,7 +353,7 @@ export const registerCommands = Result.fn(async function ({
 	for (const command of commands.values()) {
 		const builder = command.define(new SlashCommandBuilder());
 
-		const existingCommand = existingSlashCommands.find(
+		const existingCommand = existingGuildCommands.find(
 			(existingCommand) => existingCommand.name === command.name
 		);
 		if (existingCommand && !hasCommandChanged(builder, existingCommand)) {
@@ -289,7 +374,7 @@ export const registerCommands = Result.fn(async function ({
 		}
 		results.push(
 			Result.fromPromise(
-				rest.post(route, {
+				rest.post(guildRoute, {
 					body
 				})
 			)

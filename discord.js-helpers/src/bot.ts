@@ -13,7 +13,8 @@ import {
 
 import {
 	loadCommands,
-	registerCommands,
+	registerGlobalCommands,
+	registerGuildCommands,
 	type CommandConfig,
 	type CommandExecutor
 } from "./commands.js";
@@ -26,7 +27,10 @@ export type BotConfig = {
 	clientOptions: ClientOptions;
 	commandExecutor: CommandExecutor;
 	commands?: Record<string, any>;
-	commandsToRemove?: string[];
+	removeCommands?: {
+		global?: string[];
+		guild?: string[];
+	};
 	eventListeners?: Record<string, any>;
 	plugins?: Plugin[];
 	logger?: ILogger;
@@ -84,6 +88,9 @@ export function createBot(config: BotConfig) {
 		plugin.resolvedConfig?.(resolvedConfig);
 	}
 
+	const globalCommands = commands.filter((command) => command.global);
+	const guildCommands = commands.filter((command) => !command.global);
+
 	const client = new Client(config.clientOptions);
 	registerEventListeners({ client, eventListeners, logger });
 
@@ -97,15 +104,26 @@ export function createBot(config: BotConfig) {
 			return;
 		}
 
+		const globalCommandsResult = await registerGlobalCommands({
+			logger,
+			client,
+			rest,
+			commands: globalCommands,
+			remove: config.removeCommands?.global
+		});
+		if (!globalCommandsResult.ok) {
+			logger.error("Failed to register global commands", globalCommandsResult);
+		}
+
 		const guilds = guildsResult.value;
 		for (const guild of guilds.values()) {
-			const result = await registerCommands({
+			const result = await registerGuildCommands({
 				logger,
 				client,
 				rest,
 				guildId: guild.id,
-				commands,
-				remove: config.commandsToRemove
+				commands: guildCommands,
+				remove: config.removeCommands?.guild
 			});
 			if (!result.ok) {
 				logger.error(`Failed to register commands for guild ${guild.id}`, result);
