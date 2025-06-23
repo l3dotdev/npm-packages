@@ -5,6 +5,8 @@ type RouteGroup = {
 	[path: string]: RouteGroup | RouteHook<any>;
 };
 
+export type SvelteAPI<TRoutes extends RouteGroup> = ReturnType<typeof createAPI<TRoutes>>;
+
 export function createAPI<const TRoutes extends RouteGroup>(config: {
 	baseUrl: string;
 	routes: TRoutes;
