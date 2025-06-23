@@ -349,28 +349,34 @@ export const createCommandExecutor = function (config: CommandExecutorConfig) {
 					interaction
 				);
 				if (!errorMessageResult.ok) {
-					return errorMessageResult;
+					return Result.all(result, errorMessageResult);
 				}
 
 				const errorMessage = errorMessageResult.value;
 				const errorFlags = mergeMessageFlags(MessageFlags.Ephemeral, errorMessage.flags);
 
 				if (interaction.replied || interaction.deferred) {
-					return await Result.fromPromise(
-						{ onError: { type: "FOLLOWUP_ERROR_FAILED" } },
-						interaction.followUp({
-							...errorMessage,
-							flags: errorFlags
-						})
+					return Result.all(
+						result,
+						await Result.fromPromise(
+							{ onError: { type: "FOLLOWUP_ERROR_FAILED" } },
+							interaction.followUp({
+								...errorMessage,
+								flags: errorFlags
+							})
+						)
 					);
 				}
 
-				return await Result.fromPromise(
-					{ onError: { type: "REPLY_ERROR_FAILED" } },
-					interaction.reply({
-						...errorMessage,
-						flags: errorFlags
-					})
+				return Result.all(
+					result,
+					await Result.fromPromise(
+						{ onError: { type: "REPLY_ERROR_FAILED" } },
+						interaction.reply({
+							...errorMessage,
+							flags: errorFlags
+						})
+					)
 				);
 			}
 
