@@ -26,6 +26,7 @@ export type BotConfig = {
 	clientOptions: ClientOptions;
 	commandExecutor: CommandExecutor;
 	commands?: Record<string, any>;
+	commandsToRemove?: string[];
 	eventListeners?: Record<string, any>;
 	plugins?: Plugin[];
 	logger?: ILogger;
@@ -103,7 +104,8 @@ export function createBot(config: BotConfig) {
 				client,
 				rest,
 				guildId: guild.id,
-				commands
+				commands,
+				remove: config.commandsToRemove
 			});
 			if (!result.ok) {
 				logger.error(`Failed to register commands for guild ${guild.id}`, result);
