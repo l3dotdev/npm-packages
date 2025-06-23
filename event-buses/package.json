@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/event-buses",
-	"version": "0.3.4",
+	"version": "0.3.5",
 	"description": "BullMQ wrapper for schedules and service interop",
 	"type": "module",
 	"main": "./build/index.js",
@@ -27,7 +27,7 @@
 		"url": "https://github.com/l3dotdev/npm-packages.git"
 	},
 	"dependencies": {
-		"@l3dev/logger": "^0.2.2",
+		"@l3dev/logger": "^0.3.0",
 		"bullmq": "^5.53.2",
 		"cron-time-generator": "^2.0.3"
 	}
