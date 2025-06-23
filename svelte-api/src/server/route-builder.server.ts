@@ -15,7 +15,7 @@ export interface RouteBuilderMetadata {
 	POST: Endpoint<any, any, any, any> | undefined;
 }
 
-type GetInitialRouteBuilderMetadata<TRequestEvent extends RequestEvent> =
+export type InitialRouteBuilderMetadata<TRequestEvent extends RequestEvent> =
 	TRequestEvent extends RequestEvent<infer TParams, infer TRouteId>
 		? { params: TParams; routeId: TRouteId; GET: undefined; POST: undefined }
 		: never;
@@ -94,5 +94,5 @@ class RouteBuilder<TMetadata extends RouteBuilderMetadata> {
 }
 
 export function createRouteBuilder<TRequestEvent extends RequestEvent>() {
-	return new RouteBuilder<GetInitialRouteBuilderMetadata<TRequestEvent>>();
+	return new RouteBuilder<InitialRouteBuilderMetadata<TRequestEvent>>();
 }
