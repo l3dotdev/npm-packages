@@ -325,7 +325,8 @@ export const createCommandExecutor = function (config: CommandExecutorConfig) {
 		...config,
 		execute: Result.fn(async function (
 			command: CommandConfig<SlashCommandBuilder> | CommandConfig<SlashCommandSubcommandBuilder>,
-			interaction: ChatInputCommandInteraction
+			interaction: ChatInputCommandInteraction,
+			replyErrors = true
 		): Promise<CommandExecuteResult> {
 			const commandName = command.parent?.name ?? command.name;
 			const subcommandName = command.parent ? command.name : undefined;
@@ -342,7 +343,7 @@ export const createCommandExecutor = function (config: CommandExecutorConfig) {
 				});
 			}
 
-			if (!result.ok) {
+			if (!result.ok && replyErrors && result.type !== "UNKNOWN_SUBCOMMAND") {
 				const errorMessageResult = config.getErrorMessage(
 					"Error while executing command",
 					result,
@@ -442,6 +443,6 @@ export function createSubcommandExecutor({
 			});
 		}
 
-		return commandExecutor.execute(subcommand, interaction);
+		return commandExecutor.execute(subcommand, interaction, false);
 	};
 }
