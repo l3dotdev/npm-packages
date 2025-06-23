@@ -16,6 +16,7 @@ export type LoggerOptions = {
 	stdout?: NodeJS.WriteStream;
 	stderr?: NodeJS.WriteStream;
 	prefix?: string;
+	timestamps?: boolean;
 	level?: LogLevel;
 	onWrite?: OnWriteLog;
 };
@@ -72,6 +73,7 @@ export class Logger implements ILogger {
 	private readonly stdout: NodeJS.WriteStream;
 	private readonly stderr: NodeJS.WriteStream;
 	private readonly prefix: string;
+	private readonly timestamps: boolean;
 	private readonly level: LogLevel;
 	private readonly onWrite?: OnWriteLog;
 
@@ -79,6 +81,7 @@ export class Logger implements ILogger {
 		this.stdout = options?.stdout ?? process.stdout;
 		this.stderr = options?.stderr ?? process.stderr;
 		this.prefix = options?.prefix ? `${options.prefix} ` : "";
+		this.timestamps = options?.timestamps ?? false;
 		this.level =
 			options?.level ??
 			(!process.env.NODE_ENV || process.env.NODE_ENV.trim() === "production"
@@ -92,6 +95,7 @@ export class Logger implements ILogger {
 			stdout: this.stdout,
 			stderr: this.stderr,
 			level: this.level,
+			timestamps: this.timestamps,
 			...options,
 			prefix: `${this.prefix}${options.prefix ?? ""}`.trim()
 		});
@@ -151,7 +155,7 @@ export class Logger implements ILogger {
 			)
 			.trimEnd();
 
-		stream.write(`(${new Date().toISOString()}) ` + log + "\n");
+		stream.write((this.timestamps ? `(${new Date().toISOString()}) ` : "") + log + "\n");
 		if (this.onWrite) this.onWrite(logLevel, message, args);
 	}
 

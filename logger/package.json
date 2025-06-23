@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/logger",
-	"version": "0.2.3",
+	"version": "0.3.0",
 	"description": "Custom logger",
 	"type": "module",
 	"main": "./build/index.js",
