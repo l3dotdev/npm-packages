@@ -1,114 +1,126 @@
-import type { EmptyResponse } from "@l3dev/api-result";
+import { type ResponseResult } from "@l3dev/api-result";
 import type { RequestEvent } from "@sveltejs/kit";
-import { z, type ZodAny } from "zod";
+import { z, type ZodTypeAny } from "zod";
 
-import type { Endpoint, Route } from "../types.js";
-import { EndpointBuilder, type EndpointBuilderMetadata } from "./endpoint-builder.server.js";
+import type {
+	AnyRouteMetadata,
+	EndpointHandler,
+	EndpointRequest,
+	UnsetMarker
+} from "../types.internal.js";
+import type { Route } from "../types.js";
 
-export interface RouteBuilderMetadata<
-	TParams extends Partial<Record<string, string>> = Partial<Record<string, string>>,
-	TRouteId extends string | null = string | null,
-	TGet extends Endpoint<any, any, any, any> | undefined = Endpoint<any, any, any, any> | undefined,
-	TPost extends Endpoint<any, any, any, any> | undefined = Endpoint<any, any, any, any> | undefined
-> {
-	params: TParams;
-	routeId: TRouteId;
-	GET: TGet;
-	POST: TPost;
-}
+class EndpointBuilder<TEndpoint extends "get" | "post", TMetadata extends AnyRouteMetadata> {
+	private _input: ZodTypeAny = z.any();
+	private _handler: EndpointHandler<any, any, any, any> | null = null;
 
-class RouteBuilder<TMetadata extends RouteBuilderMetadata> {
-	private route: Route<
-		TMetadata["params"],
-		TMetadata["routeId"],
-		TMetadata["GET"],
-		TMetadata["POST"]
-	>;
+	public input<TInput extends ZodTypeAny>(input: TInput) {
+		this._input = input;
 
-	constructor(
-		route?: Route<TMetadata["params"], TMetadata["routeId"], TMetadata["GET"], TMetadata["POST"]>
-	) {
-		this.route =
-			route ??
-			({} as Route<TMetadata["params"], TMetadata["routeId"], TMetadata["GET"], TMetadata["POST"]>);
+		return this as EndpointBuilder<
+			TEndpoint,
+			{
+				_params: TMetadata["_params"];
+				_routeId: TMetadata["_routeId"];
+				_get: TEndpoint extends "get"
+					? {
+							input: TInput;
+							output: TMetadata["_get"]["output"];
+						}
+					: TMetadata["_get"];
+				_post: TEndpoint extends "post"
+					? {
+							input: TInput;
+							output: TMetadata["_post"]["output"];
+						}
+					: TMetadata["_post"];
+			}
+		>;
 	}
 
-	public GET<TEndpointMetadata extends EndpointBuilderMetadata>(
-		apply: (
-			builder: EndpointBuilder<
-				EndpointBuilderMetadata<TMetadata["params"], TMetadata["routeId"], ZodAny, EmptyResponse>
+	public handler<TResponse extends ResponseResult<any, any, any, any>>(
+		handler: (
+			request: EndpointRequest<
+				TMetadata["_params"],
+				TMetadata["_routeId"],
+				TMetadata[`_${TEndpoint}`]["input"]
 			>
-		) => EndpointBuilder<TEndpointMetadata>
+		) => TResponse | Promise<TResponse>
 	) {
-		const endpointBuilder = apply(
-			new EndpointBuilder<
-				EndpointBuilderMetadata<TMetadata["params"], TMetadata["routeId"], ZodAny, EmptyResponse>
-			>(z.any(), null)
-		);
-		const endpoint = endpointBuilder.build();
+		this._handler = handler;
 
-		return new RouteBuilder<
-			RouteBuilderMetadata<
-				TMetadata["params"],
-				TMetadata["routeId"],
-				Endpoint<
-					TEndpointMetadata["params"],
-					TEndpointMetadata["routeId"],
-					TEndpointMetadata["input"],
-					TEndpointMetadata["output"]
-				>,
-				TMetadata["POST"]
-			>
-		>({
-			...this.route,
-			GET: endpoint
-		});
-	}
-
-	public POST<TEndpointMetadata extends EndpointBuilderMetadata>(
-		apply: (
-			builder: EndpointBuilder<
-				EndpointBuilderMetadata<TMetadata["params"], TMetadata["routeId"], ZodAny, EmptyResponse>
-			>
-		) => EndpointBuilder<TEndpointMetadata>
-	) {
-		const endpointBuilder = apply(
-			new EndpointBuilder<
-				EndpointBuilderMetadata<TMetadata["params"], TMetadata["routeId"], ZodAny, EmptyResponse>
-			>(z.any(), null)
-		);
-		const endpoint = endpointBuilder.build();
-
-		return new RouteBuilder<
-			RouteBuilderMetadata<
-				TMetadata["params"],
-				TMetadata["routeId"],
-				TMetadata["GET"],
-				Endpoint<
-					TEndpointMetadata["params"],
-					TEndpointMetadata["routeId"],
-					TEndpointMetadata["input"],
-					TEndpointMetadata["output"]
-				>
-			>
-		>({
-			...this.route,
-			POST: endpoint
-		});
+		return this as EndpointBuilder<
+			TEndpoint,
+			{
+				_params: TMetadata["_params"];
+				_routeId: TMetadata["_routeId"];
+				_get: TEndpoint extends "get"
+					? {
+							input: TMetadata["_get"]["input"];
+							output: TResponse;
+						}
+					: TMetadata["_get"];
+				_post: TEndpoint extends "post"
+					? {
+							input: TMetadata["_post"]["input"];
+							output: TResponse;
+						}
+					: TMetadata["_post"];
+			}
+		>;
 	}
 
 	public build() {
-		return this.route satisfies Route<
-			TMetadata["params"],
-			TMetadata["routeId"],
-			TMetadata["GET"],
-			TMetadata["POST"]
-		>;
+		if (!this._handler) {
+			throw new Error("Handler not set");
+		}
+
+		return {
+			input: this._input,
+			handler: this._handler
+		};
+	}
+}
+
+class RouteBuilder<TMetadata extends AnyRouteMetadata> {
+	private route: any;
+
+	constructor() {
+		this.route = {};
+	}
+
+	public get<TNewMetadata extends AnyRouteMetadata>(
+		apply: (builder: EndpointBuilder<"get", TMetadata>) => EndpointBuilder<"get", TNewMetadata>
+	) {
+		const endpointBuilder = apply(new EndpointBuilder<"get", TMetadata>());
+		const endpoint = endpointBuilder.build();
+
+		this.route.GET = endpoint;
+
+		return this as unknown as RouteBuilder<TNewMetadata>;
+	}
+
+	public post<TNewMetadata extends AnyRouteMetadata>(
+		apply: (builder: EndpointBuilder<"post", TMetadata>) => EndpointBuilder<"post", TNewMetadata>
+	) {
+		const endpointBuilder = apply(new EndpointBuilder<"post", TMetadata>());
+		const endpoint = endpointBuilder.build();
+
+		this.route.POST = endpoint;
+
+		return this as unknown as RouteBuilder<TNewMetadata>;
+	}
+
+	public build() {
+		return this.route as Route<TMetadata>;
 	}
 }
 
 export function createRouteBuilder<TRequestEvent extends RequestEvent>() {
-	return new RouteBuilder<
-		RouteBuilderMetadata<TRequestEvent["params"], TRequestEvent["route"]["id"]>
-	>();
+	return new RouteBuilder<{
+		_params: TRequestEvent["params"];
+		_routeId: TRequestEvent["route"]["id"];
+		_get: UnsetMarker;
+		_post: UnsetMarker;
+	}>();
 }

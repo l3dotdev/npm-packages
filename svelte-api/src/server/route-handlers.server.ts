@@ -1,12 +1,13 @@
 import { ApiResult, type ResponseResult } from "@l3dev/api-result";
 import { redirect, type RequestHandler } from "@sveltejs/kit";
-import type { z } from "zod";
+import type { ZodAny } from "zod";
 
-import type { Endpoint, Route, RouteAny } from "../types.js";
+import type { Method } from "../types.internal.js";
+import type { Endpoint, Route } from "../types.js";
 
 function createRouteHandler(
-	method: keyof RouteAny,
-	endpoint: Endpoint<any, any, z.ZodAny, ResponseResult<number, any, string | URL, any>>
+	method: Method,
+	endpoint: Endpoint<any, any, ZodAny, ResponseResult<number, any, string | URL, any>>
 ) {
 	const requestHandler: RequestHandler = async (event) => {
 		const body =
@@ -55,16 +56,15 @@ function createRouteHandler(
 	return requestHandler;
 }
 
-export function createRouteHandlers<TRoute extends Route<any, any, any, any>>(route: TRoute) {
+export function createRouteHandlers<TRoute extends Route<any>>(route: TRoute) {
 	const handlers: any = {};
 
-	const anyRoute = route as RouteAny;
-	if (anyRoute.GET) {
-		handlers.GET = createRouteHandler("GET", anyRoute.GET);
+	if ("GET" in route) {
+		handlers.GET = createRouteHandler("GET", route.GET);
 	}
 
-	if (anyRoute.POST) {
-		handlers.POST = createRouteHandler("POST", anyRoute.POST);
+	if ("POST" in route) {
+		handlers.POST = createRouteHandler("POST", route.POST);
 	}
 
 	return handlers as { [method in keyof TRoute]: RequestHandler };

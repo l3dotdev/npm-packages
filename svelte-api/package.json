@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/svelte-api",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"description": "A type-safe result-based API builder for SvelteKit",
 	"type": "module",
 	"main": "./build/index.js",

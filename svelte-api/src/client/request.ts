@@ -2,46 +2,48 @@ import type { RedirectResponse } from "@l3dev/api-result";
 import { err } from "@l3dev/result";
 import type { z } from "zod";
 
-import type {
-	Endpoint,
-	GetEndpoint,
-	InferEndpointInput,
-	InferEndpointResponse,
-	Route
-} from "../types.js";
+import type { Route } from "../types.js";
 import type { RouteHook } from "./route-hook.js";
+import type { Method, UnsetMarker } from "../types.internal.js";
 
-type RouteMethod<TRouteHook extends RouteHook<any>> =
-	TRouteHook extends RouteHook<infer TRoute> ? Exclude<keyof TRoute, symbol | number> : never;
-
-type Request<TRouteHook extends RouteHook<any>, TMethod extends RouteMethod<TRouteHook>> =
+type Request<TRouteHook extends RouteHook<any>, TMethod extends Method> =
 	TRouteHook extends RouteHook<infer TRoute>
-		? TRoute extends Route<infer TParams, any, any, any>
+		? TRoute extends Route<infer TMetadata>
 			? {
 					method: TMethod;
-					// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-				} & (TParams extends {} ? object : { params: TParams }) &
-					(GetEndpoint<TRoute, TMethod> extends never
-						? object
-						: { input: InferEndpointInput<GetEndpoint<TRoute, TMethod>> })
+				} & (TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
+					? object
+					: { input: z.infer<TMetadata[`_${Lowercase<TMethod>}`]["input"]> }) &
+					(keyof TMetadata["_params"] extends never ? object : { params: TMetadata["_params"] })
 			: never
 		: never;
 
-type InputZodError<TRouteHook extends RouteHook<any>, TMethod extends RouteMethod<TRouteHook>> =
+type Response<TRouteHook extends RouteHook<any>, TMethod extends Method> =
 	TRouteHook extends RouteHook<infer TRoute>
-		? TRoute extends Route<any, any, any, any>
-			? GetEndpoint<TRoute, TMethod> extends Endpoint<any, any, infer TInput, any>
-				? z.inferFormattedError<TInput>
-				: never
+		? TRoute extends Route<infer TMetadata>
+			? TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
+				? object
+				: Exclude<TMetadata[`_${Lowercase<TMethod>}`]["output"], RedirectResponse<any, any>>
+			: never
+		: never;
+
+type InputZodError<TRouteHook extends RouteHook<any>, TMethod extends Method> =
+	TRouteHook extends RouteHook<infer TRoute>
+		? TRoute extends Route<infer TMetadata>
+			? TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
+				? object
+				: z.inferFormattedError<TMetadata[`_${Lowercase<TMethod>}`]["input"]>
 			: never
 		: never;
 
 export function createRequest(baseUrl: string) {
 	return async function request<
 		TRouteHook extends RouteHook<any>,
-		TMethod extends RouteMethod<TRouteHook>
+		TMethod extends TRouteHook extends RouteHook<infer TRoute>
+			? Exclude<keyof TRoute, symbol | number>
+			: never
 	>(route: TRouteHook, request: Request<TRouteHook, TMethod>) {
-		const url = new URL(route.routeId!, baseUrl);
+		const url = route.buildUrl(request.params, baseUrl);
 
 		const input = "input" in request && request.input;
 
@@ -54,7 +56,7 @@ export function createRequest(baseUrl: string) {
 		const body = request.method !== "GET" && input ? JSON.stringify(input) : undefined;
 
 		try {
-			const response = await fetch(route.routeId!, {
+			const response = await fetch(url, {
 				method: request.method,
 				body,
 				headers: {
@@ -73,9 +75,7 @@ export function createRequest(baseUrl: string) {
 			return {
 				status: response.status,
 				...responseBody
-			} as TRouteHook extends RouteHook<infer TRoute>
-				? Exclude<InferEndpointResponse<GetEndpoint<TRoute, TMethod>>, RedirectResponse<any, any>>
-				: never;
+			} as Response<TRouteHook, TMethod>;
 		} catch (error) {
 			return err("REQUEST_FAILED", {
 				error
