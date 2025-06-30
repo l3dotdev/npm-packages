@@ -10,7 +10,7 @@ import {
 
 export const getGuilds = Result.fn(async function (client: Client, options?: FetchGuildsOptions) {
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_GUILDS_FAILED", context: { options } } },
+		{ onError: { type: "FETCH_GUILDS", context: { options } } },
 		client.guilds.fetch(options)
 	);
 });
@@ -20,7 +20,7 @@ export const getGuild = Result.fn(async function (client: Client, guildId: Snowf
 	if (cachedGuild) return ok(cachedGuild);
 
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_GUILD_FAILED", context: { guildId } } },
+		{ onError: { type: "FETCH_GUILD", context: { guildId } } },
 		client.guilds.fetch(guildId)
 	);
 });
@@ -30,7 +30,7 @@ export const getChannel = Result.fn(async function (client: Client, channelId: S
 	if (cachedChannel) return ok(cachedChannel);
 
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_CHANNEL_FAILED", context: { channelId } } },
+		{ onError: { type: "FETCH_CHANNEL", context: { channelId } } },
 		client.channels.fetch(channelId)
 	);
 });
@@ -40,8 +40,18 @@ export const getGuildMember = Result.fn(async function (guild: Guild, memberId: 
 	if (cachedMember) return ok(cachedMember);
 
 	return await Result.fromPromise(
-		{ onError: { type: "FETCH_GUILD_MEMBER_FAILED", context: { guildId: guild.id, memberId } } },
+		{ onError: { type: "FETCH_GUILD_MEMBER", context: { guildId: guild.id, memberId } } },
 		guild.members.fetch(memberId)
+	);
+});
+
+export const getGuildRole = Result.fn(async function (guild: Guild, roleId: Snowflake) {
+	const cachedRole = guild.roles.cache.get(roleId);
+	if (cachedRole) return ok(cachedRole);
+
+	return await Result.fromPromise(
+		{ onError: { type: "FETCH_GUILD_ROLE", context: { guildId: guild.id, roleId } } },
+		guild.roles.fetch(roleId)
 	);
 });
 
@@ -53,7 +63,7 @@ export const getMessage = Result.fn(async function (
 	if (cachedMessage) return ok(cachedMessage);
 
 	const fetchResult = await Result.fromPromise(
-		{ onError: { type: "FETCH_MESSAGE_FAILED", context: { channelId: channel.id, messageId } } },
+		{ onError: { type: "FETCH_MESSAGE", context: { channelId: channel.id, messageId } } },
 		channel.messages.fetch(messageId)
 	);
 
