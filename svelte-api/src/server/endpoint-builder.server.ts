@@ -1,22 +1,19 @@
-import type { EmptyResponse, ResponseResult } from "@l3dev/api-result";
-import type { z, ZodTypeAny } from "zod";
+import type { ResponseResult } from "@l3dev/api-result";
+import type { ZodTypeAny } from "zod";
 
 import type { Endpoint, EndpointHandler, EndpointRequest } from "../types.js";
-import type { RouteBuilderMetadata } from "./route-builder.server.js";
 
-export interface EndpointBuilderMetadata {
-	params: Partial<Record<string, string>>;
-	routeId: string | null;
-	input: ZodTypeAny;
-	output: ResponseResult<any, any, any, any>;
+export interface EndpointBuilderMetadata<
+	TParams extends Partial<Record<string, string>> = Partial<Record<string, string>>,
+	TRouteId extends string | null = string | null,
+	TInput extends ZodTypeAny = ZodTypeAny,
+	TOutput extends ResponseResult<any, any, any, any> = ResponseResult<any, any, any, any>
+> {
+	params: TParams;
+	routeId: TRouteId;
+	input: TInput;
+	output: TOutput;
 }
-
-export type GetInitialEndpointBuilderMetadata<TMetadata extends RouteBuilderMetadata> = {
-	params: TMetadata["params"];
-	routeId: TMetadata["routeId"];
-	input: z.ZodAny;
-	output: EmptyResponse;
-};
 
 export class EndpointBuilder<TMetadata extends EndpointBuilderMetadata> {
 	private _input: TMetadata["input"];
@@ -41,12 +38,14 @@ export class EndpointBuilder<TMetadata extends EndpointBuilderMetadata> {
 	}
 
 	public input<TInput extends ZodTypeAny>(input: TInput) {
-		return new EndpointBuilder<{
-			params: TMetadata["params"];
-			routeId: TMetadata["routeId"];
-			input: TInput;
-			output: TMetadata["output"];
-		}>(input, this._handler);
+		return new EndpointBuilder<
+			EndpointBuilderMetadata<
+				TMetadata["params"],
+				TMetadata["routeId"],
+				TInput,
+				TMetadata["output"]
+			>
+		>(input, this._handler);
 	}
 
 	public handler<TResponse extends ResponseResult<any, any, any, any>>(
@@ -54,12 +53,14 @@ export class EndpointBuilder<TMetadata extends EndpointBuilderMetadata> {
 			request: EndpointRequest<TMetadata["params"], TMetadata["routeId"], TMetadata["input"]>
 		) => TResponse | Promise<TResponse>
 	) {
-		return new EndpointBuilder<{
-			params: TMetadata["params"];
-			routeId: TMetadata["routeId"];
-			input: TMetadata["input"];
-			output: TResponse;
-		}>(this._input, handler);
+		return new EndpointBuilder<
+			EndpointBuilderMetadata<
+				TMetadata["params"],
+				TMetadata["routeId"],
+				TMetadata["input"],
+				TResponse
+			>
+		>(this._input, handler);
 	}
 
 	public build() {
