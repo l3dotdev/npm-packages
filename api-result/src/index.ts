@@ -1,9 +1,9 @@
 import { err, fromErr, type ErrResponse } from "./err.js";
-import { ok, type OkResponse } from "./ok.js";
+import { fromOk, ok, type OkResponse } from "./ok.js";
 import { redirect, type RedirectResponse } from "./redirect.js";
 import type { ResponseResult } from "./result.types.js";
 
-export * from "./ok.js";
+export { ok, type OkResponse, EMPTY, type EmptyResponse } from "./ok.js";
 export { err, type ErrResponse } from "./err.js";
 export * from "./redirect.js";
 export * from "./result.types.js";
@@ -30,6 +30,7 @@ export const ApiResult = {
 	ok,
 	err,
 	redirect,
+	fromOk,
 	fromErr,
 	isOk,
 	isRedirect,
