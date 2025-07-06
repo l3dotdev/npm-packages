@@ -90,9 +90,35 @@ class RouteBuilder<TMetadata extends AnyRouteMetadata> {
 	}
 
 	public get<TNewMetadata extends AnyRouteMetadata>(
-		apply: (builder: EndpointBuilder<"get", TMetadata>) => EndpointBuilder<"get", TNewMetadata>
+		apply: (
+			builder: EndpointBuilder<
+				"get",
+				{
+					_params: TMetadata["_params"];
+					_routeId: TMetadata["_routeId"];
+					_get: {
+						input: UnsetMarker;
+						output: UnsetMarker;
+					};
+					_post: TMetadata["_post"];
+				}
+			>
+		) => EndpointBuilder<"get", TNewMetadata>
 	) {
-		const endpointBuilder = apply(new EndpointBuilder<"get", TMetadata>());
+		const endpointBuilder = apply(
+			new EndpointBuilder<
+				"get",
+				{
+					_params: TMetadata["_params"];
+					_routeId: TMetadata["_routeId"];
+					_get: {
+						input: UnsetMarker;
+						output: UnsetMarker;
+					};
+					_post: TMetadata["_post"];
+				}
+			>()
+		);
 		const endpoint = endpointBuilder.build();
 
 		this.route.GET = endpoint;
@@ -101,9 +127,35 @@ class RouteBuilder<TMetadata extends AnyRouteMetadata> {
 	}
 
 	public post<TNewMetadata extends AnyRouteMetadata>(
-		apply: (builder: EndpointBuilder<"post", TMetadata>) => EndpointBuilder<"post", TNewMetadata>
+		apply: (
+			builder: EndpointBuilder<
+				"post",
+				{
+					_params: TMetadata["_params"];
+					_routeId: TMetadata["_routeId"];
+					_get: TMetadata["_get"];
+					_post: {
+						input: UnsetMarker;
+						output: UnsetMarker;
+					};
+				}
+			>
+		) => EndpointBuilder<"post", TNewMetadata>
 	) {
-		const endpointBuilder = apply(new EndpointBuilder<"post", TMetadata>());
+		const endpointBuilder = apply(
+			new EndpointBuilder<
+				"post",
+				{
+					_params: TMetadata["_params"];
+					_routeId: TMetadata["_routeId"];
+					_get: TMetadata["_get"];
+					_post: {
+						input: UnsetMarker;
+						output: UnsetMarker;
+					};
+				}
+			>()
+		);
 		const endpoint = endpointBuilder.build();
 
 		this.route.POST = endpoint;
