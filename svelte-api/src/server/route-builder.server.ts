@@ -168,6 +168,8 @@ class RouteBuilder<TMetadata extends AnyRouteMetadata> {
 	}
 }
 
+export type { RouteBuilder, EndpointBuilder };
+
 export function createRouteBuilder<TRequestEvent extends RequestEvent>() {
 	return new RouteBuilder<{
 		_params: TRequestEvent["params"];
