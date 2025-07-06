@@ -4,26 +4,41 @@ import type { z } from "zod";
 
 import type { Route } from "../types.js";
 import type { RouteHook } from "./route-hook.js";
-import type { Method, UnsetMarker } from "../types.internal.js";
+import type { AnyRouteMetadata, Method, UnsetMarker } from "../types.internal.js";
+
+type RequestInput<
+	TMetadata extends AnyRouteMetadata,
+	TMethod extends Method
+> = TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
+	? object
+	: TMetadata[`_${Lowercase<TMethod>}`]["input"] extends UnsetMarker
+		? object
+		: { input: z.infer<TMetadata[`_${Lowercase<TMethod>}`]["input"]> };
+
+type RequestParams<TMetadata extends AnyRouteMetadata> = keyof TMetadata["_params"] extends never
+	? object
+	: { params: TMetadata["_params"] };
 
 type Request<TRouteHook extends RouteHook<any>, TMethod extends Method> =
 	TRouteHook extends RouteHook<infer TRoute>
 		? TRoute extends Route<infer TMetadata>
-			? {
-					method: TMethod;
-				} & (TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
-					? object
-					: { input: z.infer<TMetadata[`_${Lowercase<TMethod>}`]["input"]> }) &
-					(keyof TMetadata["_params"] extends never ? object : { params: TMetadata["_params"] })
+			? { method: TMethod } & RequestInput<TMetadata, TMethod> &
+					RequestParams<TMetadata> &
+					Omit<RequestInit, "method" | "body">
 			: never
 		: never;
+
+type ResponseOutput<
+	TMetadata extends AnyRouteMetadata,
+	TMethod extends Method
+> = TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
+	? object
+	: Exclude<TMetadata[`_${Lowercase<TMethod>}`]["output"], RedirectResponse<any, any>>;
 
 type Response<TRouteHook extends RouteHook<any>, TMethod extends Method> =
 	TRouteHook extends RouteHook<infer TRoute>
 		? TRoute extends Route<infer TMetadata>
-			? TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
-				? object
-				: Exclude<TMetadata[`_${Lowercase<TMethod>}`]["output"], RedirectResponse<any, any>>
+			? ResponseOutput<TMetadata, TMethod>
 			: never
 		: never;
 
@@ -31,7 +46,7 @@ type InputZodError<TRouteHook extends RouteHook<any>, TMethod extends Method> =
 	TRouteHook extends RouteHook<infer TRoute>
 		? TRoute extends Route<infer TMetadata>
 			? TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
-				? object
+				? never
 				: z.inferFormattedError<TMetadata[`_${Lowercase<TMethod>}`]["input"]>
 			: never
 		: never;
@@ -53,15 +68,18 @@ export function createRequest(baseUrl: string) {
 			}
 		}
 
+		const headers = new Headers(request.headers);
 		const body = request.method !== "GET" && input ? JSON.stringify(input) : undefined;
+
+		if (body) {
+			headers.set("Content-Type", "application/json");
+		}
 
 		try {
 			const response = await fetch(url, {
-				method: request.method,
+				...request,
 				body,
-				headers: {
-					...(body ? { "Content-Type": "application/json" } : {})
-				}
+				headers
 			});
 
 			const responseBody = await response.json();
