@@ -3,6 +3,8 @@ import type { ZodTypeAny } from "zod";
 
 import type { AnyRouteMetadata, EndpointHandler, UnsetMarker } from "./types.internal";
 
+export type { UnsetMarker };
+
 export type Endpoint<
 	TParams extends Partial<Record<string, string>>,
 	TRouteId extends string | null,
