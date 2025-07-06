@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/api-result",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Result objects for API responses",
 	"type": "module",
 	"main": "./build/index.js",

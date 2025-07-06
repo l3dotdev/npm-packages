@@ -20,9 +20,7 @@ type RedirectStatusToCode<TStatus extends RedirectStatus> =
 export type RedirectResponse<TTarget extends string | URL, TStatus extends RedirectStatusCode> = {
 	ok: true;
 	redirect: true;
-	value: {
-		target: TTarget;
-	};
+	target: TTarget;
 	status: TStatus;
 };
 
@@ -37,7 +35,7 @@ export function redirect<TTarget extends string | URL, TStatus extends RedirectS
 	return {
 		ok: true,
 		redirect: true,
-		value: { target },
+		target,
 		status: status as RedirectStatusToCode<TStatus>
 	};
 }
