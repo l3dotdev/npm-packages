@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/svelte-api",
-	"version": "0.6.3",
+	"version": "0.6.4",
 	"description": "A type-safe result-based API builder for SvelteKit",
 	"type": "module",
 	"main": "./build/index.js",
@@ -41,8 +41,8 @@
 		"@sveltejs/kit": "^2.0.0"
 	},
 	"dependencies": {
-		"@l3dev/api-result": "^0.2.5",
-		"@l3dev/result": "^0.3.0",
+		"@l3dev/api-result": "^0.3.1",
+		"@l3dev/result": "^0.3.1",
 		"zod": "^3.25.56"
 	},
 	"devDependencies": {

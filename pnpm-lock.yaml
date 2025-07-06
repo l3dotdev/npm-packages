@@ -110,10 +110,10 @@ importers:
   svelte-api:
     dependencies:
       '@l3dev/api-result':
-        specifier: ^0.2.4
+        specifier: ^0.3.1
         version: link:../api-result
       '@l3dev/result':
-        specifier: ^0.3.0
+        specifier: ^0.3.1
         version: link:../result
       zod:
         specifier: ^3.25.56

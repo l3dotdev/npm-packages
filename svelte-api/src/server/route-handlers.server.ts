@@ -42,16 +42,12 @@ function createRouteHandler(
 		}
 
 		if (ApiResult.isRedirect(result)) {
-			redirect(result.status, result.value.target);
+			redirect(result.status, result.target);
 		}
 
-		return Response.json(
-			{
-				ok: true,
-				value: result.value
-			},
-			{ status: result.status }
-		);
+		const { status, ...response } = result;
+
+		return Response.json(response, { status });
 	};
 	return requestHandler;
 }
