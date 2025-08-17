@@ -1,10 +1,11 @@
 import { all, allAsync, allErrors, allSettledAsync, allValues } from "./all.js";
 import { err, type Err } from "./err.js";
 import { fn } from "./fn.js";
+import { from } from "./from.js";
+import { fromPromise } from "./fromPromise.js";
 import { ok, type Ok } from "./ok.js";
 import { pipe } from "./pipe.js";
 import { pipeAsync } from "./pipeAsync.js";
-import { fromPromise } from "./promise.js";
 import type { ReturnResult } from "./result.types.js";
 
 export * from "./ok.js";
@@ -36,6 +37,7 @@ export const Result = {
 	pipe,
 	pipeAsync,
 	fn,
+	from,
 	fromPromise,
 	unwrapOrDefault,
 	all,
