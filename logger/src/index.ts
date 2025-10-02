@@ -160,20 +160,19 @@ export class Logger implements ILogger {
 	}
 
 	private static stylePrimaryMessage(logLevel: LogLevel, message: any) {
-		if (logLevel === LogLevel.Log) {
-			return message;
-		} else if (logLevel === LogLevel.Audit) {
-			return Logger.style(`DEBUG ${message}`, { fg: "gray" });
-		} else if (logLevel === LogLevel.Debug) {
-			return Logger.style(`AUDIT ${message}`, { fg: "cyan" });
-		} else if (logLevel === LogLevel.Info) {
-			return `${Logger.style("INFO", { fg: "blue" })} ${message}`;
-		} else if (logLevel === LogLevel.Warn) {
-			return `${Logger.style(" WARN ", { fg: "black", bg: "yellow" })} ${message}`;
-		} else if (logLevel === LogLevel.Error) {
-			return `${Logger.style(" ERROR ", { fg: "white", bg: "red" })} ${message}`;
-		} else if (logLevel === LogLevel.Fatal) {
-			return `${Logger.style(" FATAL ", { fg: "black", bg: "red", modifier: "bright" })} ${message}`;
+		switch (logLevel) {
+			case LogLevel.Debug:
+				return Logger.style(`DEBUG ${message}`, { fg: "gray" });
+			case LogLevel.Audit:
+				return `${Logger.style("AUDIT", { fg: "cyan", modifier: "bright" })} ${message}`;
+			case LogLevel.Info:
+				return `${Logger.style("INFO", { fg: "blue" })} ${message}`;
+			case LogLevel.Warn:
+				return `${Logger.style(" WARN ", { fg: "black", bg: "yellow" })} ${message}`;
+			case LogLevel.Error:
+				return `${Logger.style(" ERROR ", { fg: "white", bg: "red" })} ${message}`;
+			case LogLevel.Fatal:
+				return `${Logger.style(" FATAL ", { fg: "black", bg: "red", modifier: "bright" })} ${message}`;
 		}
 
 		return message;
