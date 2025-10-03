@@ -51,16 +51,18 @@ importers:
         specifier: ^8.29.1
         version: 8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)
 
+  abac: {}
+
   api-result:
     dependencies:
       '@l3dev/result':
         specifier: ^0.3.0
-        version: link:../result
+        version: 0.3.1
 
   discord.js-helpers:
     dependencies:
       '@l3dev/result':
-        specifier: ^0.3.0
+        specifier: ^0.4.0
         version: link:../result
       discord.js:
         specifier: ^14.19.0
@@ -70,7 +72,7 @@ importers:
         version: 3.25.56
     devDependencies:
       '@l3dev/logger':
-        specifier: ^0.3.0
+        specifier: ^0.3.1
         version: link:../logger
 
   drizzle-helpers:
@@ -80,7 +82,7 @@ importers:
         version: link:../logger
       '@l3dev/result':
         specifier: ^0.3.0
-        version: link:../result
+        version: 0.3.1
       drizzle-orm:
         specifier: ^0.40.1
         version: 0.40.1
@@ -114,7 +116,7 @@ importers:
         version: link:../api-result
       '@l3dev/result':
         specifier: ^0.3.1
-        version: link:../result
+        version: 0.3.1
       zod:
         specifier: ^3.25.56
         version: 3.25.56
@@ -394,6 +396,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@l3dev/result@0.3.1':
+    resolution: {integrity: sha512-qDNlCo0+nOJeiVTYJWJL31p8NZluD4Pjq8KveX48czB0tVgODcb1I4s+Iv5Jy1YRGewMgm4QA+t2UnttK0woCA==}
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     resolution: {integrity: sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw==}
@@ -2395,6 +2400,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@l3dev/result@0.3.1':
+    dependencies:
+      zod: 3.25.56
+
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     optional: true
 
@@ -3082,7 +3091,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0)(eslint@9.25.1(jiti@2.4.2)))(eslint@9.25.1(jiti@2.4.2)):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.25.1(jiti@2.4.2)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -3104,7 +3113,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.25.1(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0)(eslint@9.25.1(jiti@2.4.2)))(eslint@9.25.1(jiti@2.4.2))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.25.1(jiti@2.4.2))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
