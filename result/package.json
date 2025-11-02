@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/result",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"description": "Type-safe result-based error handling",
 	"type": "module",
 	"main": "./build/index.js",
@@ -11,8 +11,16 @@
 			"import": "./build/index.js"
 		},
 		"./zod": {
-			"types": "./build/zod.d.ts",
-			"import": "./build/zod.js"
+			"types": "./build/zod/v4.d.ts",
+			"import": "./build/zod/v4.js"
+		},
+		"./zod/v4": {
+			"types": "./build/zod/v4.d.ts",
+			"import": "./build/zod/v4.js"
+		},
+		"./zod/v3": {
+			"types": "./build/zod/v3.d.ts",
+			"import": "./build/zod/v3.js"
 		}
 	},
 	"files": [
@@ -31,6 +39,6 @@
 		"url": "https://github.com/l3dotdev/npm-packages.git"
 	},
 	"dependencies": {
-		"zod": "^3.25.56"
+		"zod": "^4.1.12"
 	}
 }

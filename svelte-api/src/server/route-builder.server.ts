@@ -1,6 +1,6 @@
 import { type ResponseResult } from "@l3dev/api-result";
 import type { RequestEvent } from "@sveltejs/kit";
-import { z, type ZodTypeAny } from "zod";
+import { z } from "zod";
 
 import type {
 	AnyRouteMetadata,
@@ -11,10 +11,10 @@ import type {
 import type { Route } from "../types.js";
 
 class EndpointBuilder<TEndpoint extends "get" | "post", TMetadata extends AnyRouteMetadata> {
-	private _input: ZodTypeAny = z.any();
+	private _input: z.ZodType = z.any();
 	private _handler: EndpointHandler<any, any, any, any> | null = null;
 
-	public input<TInput extends ZodTypeAny>(input: TInput) {
+	public input<TInput extends z.ZodType>(input: TInput) {
 		this._input = input;
 
 		return this as EndpointBuilder<

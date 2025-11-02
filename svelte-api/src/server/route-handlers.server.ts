@@ -1,13 +1,13 @@
 import { ApiResult, type ResponseResult } from "@l3dev/api-result";
 import { redirect, type RequestHandler } from "@sveltejs/kit";
-import type { ZodAny } from "zod";
+import { z } from "zod";
 
 import type { Method } from "../types.internal.js";
 import type { Endpoint, Route } from "../types.js";
 
 function createRouteHandler(
 	method: Method,
-	endpoint: Endpoint<any, any, ZodAny, ResponseResult<number, any, string | URL, any>>
+	endpoint: Endpoint<any, any, z.ZodAny, ResponseResult<number, any, string | URL, any>>
 ) {
 	const requestHandler: RequestHandler = async (event) => {
 		const body =
@@ -18,7 +18,7 @@ function createRouteHandler(
 				{
 					ok: false,
 					type: "INVALID_INPUT",
-					context: error
+					context: z.treeifyError(error)
 				},
 				{
 					status: 400

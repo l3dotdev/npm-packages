@@ -20,13 +20,15 @@ export type EventListenerModule<Event extends keyof ClientEvents> = {
 	default: EventListenerConfig<Event>;
 };
 
+export const ListenerFunctionSchema = z.function({
+	input: z.any().array(),
+	output: z.union([ReturnResultSchema, z.promise(ReturnResultSchema)])
+});
+
 export const EventListenerConfigSchema = z.object({
-	event: z.nativeEnum(Events),
+	event: z.enum(Events),
 	once: z.boolean().optional(),
-	listener: z.union([
-		z.function(z.tuple([]).rest(z.any()), ReturnResultSchema),
-		z.function(z.tuple([]).rest(z.any()), z.promise(ReturnResultSchema))
-	])
+	listener: ListenerFunctionSchema
 });
 
 export function defineEventListener<Event extends keyof ClientEvents>(

@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/api-result",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"description": "Result objects for API responses",
 	"type": "module",
 	"main": "./build/index.js",
@@ -26,7 +26,7 @@
 		"type": "git",
 		"url": "https://github.com/l3dotdev/npm-packages.git"
 	},
-	"dependencies": {
-		"@l3dev/result": "^0.3.0"
+	"peerDependencies": {
+		"@l3dev/result": "^0.5.0"
 	}
 }

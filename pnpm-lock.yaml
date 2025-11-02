@@ -56,20 +56,20 @@ importers:
   api-result:
     dependencies:
       '@l3dev/result':
-        specifier: ^0.3.0
-        version: 0.3.1
+        specifier: ^0.5.0
+        version: link:../result
 
   discord.js-helpers:
     dependencies:
       '@l3dev/result':
-        specifier: ^0.4.0
+        specifier: ^0.5.0
         version: link:../result
       discord.js:
         specifier: ^14.19.0
         version: 14.19.1
       zod:
-        specifier: ^3.25.56
-        version: 3.25.56
+        specifier: ^4.1.12
+        version: 4.1.12
     devDependencies:
       '@l3dev/logger':
         specifier: ^0.3.1
@@ -81,11 +81,11 @@ importers:
         specifier: ^0.3.1
         version: link:../logger
       '@l3dev/result':
-        specifier: ^0.4.0
+        specifier: ^0.5.0
         version: link:../result
       drizzle-orm:
-        specifier: ^0.44.6
-        version: 0.44.6
+        specifier: ^0.44.7
+        version: 0.44.7
 
   event-buses:
     dependencies:
@@ -106,20 +106,20 @@ importers:
   result:
     dependencies:
       zod:
-        specifier: ^3.25.56
-        version: 3.25.56
+        specifier: ^4.1.12
+        version: 4.1.12
 
   svelte-api:
     dependencies:
       '@l3dev/api-result':
-        specifier: ^0.3.1
+        specifier: ^0.4.0
         version: link:../api-result
       '@l3dev/result':
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.5.0
+        version: link:../result
       zod:
-        specifier: ^3.25.56
-        version: 3.25.56
+        specifier: ^4.1.12
+        version: 4.1.12
     devDependencies:
       '@sveltejs/kit':
         specifier: ^2.20.5
@@ -396,9 +396,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
-
-  '@l3dev/result@0.3.1':
-    resolution: {integrity: sha512-qDNlCo0+nOJeiVTYJWJL31p8NZluD4Pjq8KveX48czB0tVgODcb1I4s+Iv5Jy1YRGewMgm4QA+t2UnttK0woCA==}
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     resolution: {integrity: sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw==}
@@ -956,8 +953,8 @@ packages:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
 
-  drizzle-orm@0.44.6:
-    resolution: {integrity: sha512-uy6uarrrEOc9K1u5/uhBFJbdF5VJ5xQ/Yzbecw3eAYOunv5FDeYkR2m8iitocdHBOHbvorviKOW5GVw0U1j4LQ==}
+  drizzle-orm@0.44.7:
+    resolution: {integrity: sha512-quIpnYznjU9lHshEOAYLoZ9s3jweleHlZIAWR/jX9gAWNg/JhQ1wj0KGRf7/Zm+obRrYd9GjPVJg790QY9N5AQ==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -2179,8 +2176,8 @@ packages:
   zimmerframe@1.1.2:
     resolution: {integrity: sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==}
 
-  zod@3.25.56:
-    resolution: {integrity: sha512-rd6eEF3BTNvQnR2e2wwolfTmUTnp70aUTqr0oaGbHifzC3BKJsoV+Gat8vxUMR1hwOKBs6El+qWehrHbCpW6SQ==}
+  zod@4.1.12:
+    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
 snapshots:
 
@@ -2402,10 +2399,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
-
-  '@l3dev/result@0.3.1':
-    dependencies:
-      zod: 3.25.56
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     optional: true
@@ -2950,7 +2943,7 @@ snapshots:
     dependencies:
       esutils: 2.0.3
 
-  drizzle-orm@0.44.6: {}
+  drizzle-orm@0.44.7: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -4205,4 +4198,4 @@ snapshots:
 
   zimmerframe@1.1.2: {}
 
-  zod@3.25.56: {}
+  zod@4.1.12: {}

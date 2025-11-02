@@ -1,6 +1,6 @@
 import type { ResponseResult } from "@l3dev/api-result";
 import type { RequestEvent } from "@sveltejs/kit";
-import type { z, ZodTypeAny } from "zod";
+import type { z } from "zod";
 
 export type UnsetMarker = "unset" & {
 	__brand: "unsetMarker";
@@ -18,7 +18,7 @@ export interface AnyRouteMetadata {
 export type EndpointRequest<
 	TParams extends Partial<Record<string, string>>,
 	TRouteId extends string | null,
-	TInput extends ZodTypeAny
+	TInput extends z.ZodType
 > = {
 	event: RequestEvent<TParams, TRouteId>;
 	input: z.infer<TInput>;
@@ -27,6 +27,6 @@ export type EndpointRequest<
 export type EndpointHandler<
 	TParams extends Partial<Record<string, string>>,
 	TRouteId extends string | null,
-	TInput extends ZodTypeAny,
+	TInput extends z.ZodType,
 	TResponse extends ResponseResult<any, any, any, any>
 > = (request: EndpointRequest<TParams, TRouteId, TInput>) => TResponse | Promise<TResponse>;

@@ -64,25 +64,27 @@ const ChatInputCommandInteractionSchema = z.custom<ChatInputCommandInteraction>(
 	(data) => data instanceof ChatInputCommandInteraction
 );
 
+export const CommandExecuteFunctionSchema = z.function({
+	input: [ChatInputCommandInteractionSchema],
+	output: z.union([ReturnResultSchema, z.promise(ReturnResultSchema)])
+});
+
 export const CommandConfigSchema = z.object({
 	name: z.string(),
-	define: z.function(z.tuple([SlashCommandBuilderSchema]), SlashCommandBuilderSchema),
-	execute: z.union([
-		z.function(z.tuple([ChatInputCommandInteractionSchema]), ReturnResultSchema),
-		z.function(z.tuple([ChatInputCommandInteractionSchema]), z.promise(ReturnResultSchema))
-	])
+	define: z.function({
+		input: [SlashCommandBuilderSchema],
+		output: SlashCommandBuilderSchema
+	}),
+	execute: CommandExecuteFunctionSchema
 });
 
 export const SubcommandConfigSchema = z.object({
 	name: z.string(),
-	define: z.function(
-		z.tuple([SlashCommandSubcommandBuilderSchema]),
-		SlashCommandSubcommandBuilderSchema
-	),
-	execute: z.union([
-		z.function(z.tuple([ChatInputCommandInteractionSchema]), ReturnResultSchema),
-		z.function(z.tuple([ChatInputCommandInteractionSchema]), z.promise(ReturnResultSchema))
-	])
+	define: z.function({
+		input: [SlashCommandSubcommandBuilderSchema],
+		output: SlashCommandSubcommandBuilderSchema
+	}),
+	execute: CommandExecuteFunctionSchema
 });
 
 export function defineCommand(config: CommandConfig<SlashCommandBuilder>) {

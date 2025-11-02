@@ -47,7 +47,7 @@ type InputZodError<TRouteHook extends RouteHook<any>, TMethod extends Method> =
 		? TRoute extends Route<infer TMetadata>
 			? TMetadata[`_${Lowercase<TMethod>}`] extends UnsetMarker
 				? never
-				: z.inferFormattedError<TMetadata[`_${Lowercase<TMethod>}`]["input"]>
+				: ReturnType<typeof z.treeifyError<TMetadata[`_${Lowercase<TMethod>}`]["input"]>>
 			: never
 		: never;
 
