@@ -17,9 +17,6 @@ Thumbs.db
 !.env.example
 !.env.test
 
-# Auth
-.aws_profile
-
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
