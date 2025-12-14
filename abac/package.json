@@ -15,6 +15,7 @@
 		"build"
 	],
 	"scripts": {
+		"test": "vitest",
 		"build": "tsc -p tsconfig.json",
 		"package": "pnpm build",
 		"prepublishOnly": "pnpm package"
@@ -25,5 +26,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/l3dotdev/npm-packages.git"
+	},
+	"devDependencies": {
+		"vitest": "^4.0.15"
 	}
 }
