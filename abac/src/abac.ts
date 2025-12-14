@@ -3,6 +3,7 @@ import { ActionGroup } from "./actionGroup.js";
 import { ActionVisitor } from "./actionVisitor.js";
 import type { ResourceMap, UnionToResourceMap } from "./internal/collections.js";
 import type { UnsetMarker } from "./internal/core.js";
+import type { IMeta } from "./internal/meta.js";
 import type { ActionFromPath, ActionPaths, FilterActionPaths } from "./internal/paths.js";
 import { Permission, type PermissionOptions } from "./permission.js";
 import { Policy } from "./policy.js";
@@ -14,6 +15,13 @@ export type ConfigurableAction = {
 	action: Action<any, any>;
 	own: boolean;
 };
+
+type ConfigurableActionGroup = {
+	meta: IMeta;
+	children: ConfigurableActionTreeNode[];
+};
+
+export type ConfigurableActionTreeNode = ConfigurableAction | ConfigurableActionGroup;
 
 export class ABAC<TResources extends ResourceMap> {
 	private _resourceMap: TResources;
@@ -45,6 +53,47 @@ export class ABAC<TResources extends ResourceMap> {
 		});
 
 		return actions;
+	}
+
+	public getConfigurableActionsTree() {
+		const nodeMap = new Map<string, ConfigurableActionGroup>();
+		const root = {
+			children: []
+		} as unknown as ConfigurableActionGroup;
+		nodeMap.set("", root);
+
+		const visitor = new ActionVisitor(this._resourceMap);
+		visitor.traverse(({ action, resource, path, stack }) => {
+			if (!action.configurable) {
+				return;
+			}
+
+			let parent = root;
+			if (stack.length) {
+				let stackPath = "";
+				for (const item of stack) {
+					stackPath = `${stackPath}.${item.name}`;
+					if (!nodeMap.has(stackPath)) {
+						const node = {
+							meta: item,
+							children: []
+						};
+						parent.children.push(node);
+						nodeMap.set(stackPath, node);
+					}
+
+					parent = nodeMap.get(stackPath)!;
+				}
+			}
+
+			parent.children.push({
+				path,
+				action,
+				own: resource.ownable && resource.ownConfigurable && !action.noObject
+			});
+		});
+
+		return root.children;
 	}
 
 	public can<TActionPath extends ActionPaths<TResources>>(

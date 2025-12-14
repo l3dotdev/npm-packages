@@ -1,4 +1,5 @@
 import type { MakeOptional } from "./internal/core.js";
+import type { IMeta } from "./internal/meta.js";
 
 export type RuleCtx = {
 	subject: any;
@@ -25,7 +26,7 @@ export type InferActionAdditionalContext<TAction> = Omit<
 	"subject" | "object"
 >;
 
-export class Action<TName extends string, TContext extends ActionContext> {
+export class Action<TName extends string, TContext extends ActionContext> implements IMeta {
 	private _name: TName;
 	private _title: string | null = null;
 	private _description: string | null = null;

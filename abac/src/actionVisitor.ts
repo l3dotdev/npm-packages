@@ -1,9 +1,15 @@
 import { Action } from "./action.js";
+import type { ActionGroup } from "./actionGroup.js";
 import type { ActionMap, ResourceMap } from "./internal/collections.js";
 import type { ActionFromPath, ActionPaths } from "./internal/paths.js";
 import type { Resource } from "./resource.js";
 
-type VisitContext = { action: Action<any, any>; resource: Resource<any, any>; path: string };
+type TraverseContext = { stack: (Resource<any, any> | ActionGroup<any, any>)[]; path: string };
+
+type VisitContext = Readonly<TraverseContext> & {
+	action: Action<any, any>;
+	resource: Resource<any, any>;
+};
 
 type Callback = (ctx: VisitContext) => any;
 
@@ -47,41 +53,50 @@ export class ActionVisitor<TResources extends ResourceMap> {
 		this.stop = false;
 		this.callback = callback;
 
-		this.traverseResources(this.resources);
+		this.traverseResources(this.resources, {
+			stack: [],
+			path: ""
+		});
 	}
 
-	private traverseResources(resources: ResourceMap, path?: string) {
+	private traverseResources(resources: ResourceMap, ctx: TraverseContext) {
 		for (const [name, resource] of Object.entries(resources)) {
 			if (this.stop) {
 				break;
 			}
 
-			this.traverseResource(resource, path ? `${path}.${name}` : name);
+			this.traverseResource(resource, {
+				stack: [...ctx.stack, resource],
+				path: ctx.path ? `${ctx.path}.${name}` : name
+			});
 		}
 	}
 
-	private traverseResource(resource: Resource<any, any>, path: string) {
-		this.traverseActions(resource, resource.actions, path);
-		this.traverseResources(resource.subResources, path);
+	private traverseResource(resource: Resource<any, any>, ctx: TraverseContext) {
+		this.traverseActions(resource, resource.actions, ctx);
+		this.traverseResources(resource.subResources, ctx);
 	}
 
-	private traverseActions(resource: Resource<any, any>, actions: ActionMap, path: string) {
+	private traverseActions(resource: Resource<any, any>, actions: ActionMap, ctx: TraverseContext) {
 		for (const [name, action] of Object.entries(actions)) {
 			if (this.stop) {
 				break;
 			}
 
 			if (action instanceof Action) {
-				const ctx = { action, resource, path: `${path}:${name}` };
-				this.lastVisited = ctx;
+				const visited = { ...ctx, action, resource, path: `${ctx.path}:${name}` };
+				this.lastVisited = visited;
 
-				const stop = this.callback(ctx);
+				const stop = this.callback(visited);
 				if (stop) {
 					this.stop = true;
 					break;
 				}
 			} else {
-				this.traverseActions(resource, action.actions, `${path}.${name}`);
+				this.traverseActions(resource, action.actions, {
+					stack: [...ctx.stack, action],
+					path: `${ctx.path}.${name}`
+				});
 			}
 		}
 	}

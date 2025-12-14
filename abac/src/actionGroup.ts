@@ -1,6 +1,7 @@
 import { type Action, type RuleCtx } from "./action.js";
 import type { ActionMap, ToActionMap } from "./internal/collections.js";
 import type { Expand, UnsetMarker } from "./internal/core.js";
+import type { IMeta } from "./internal/meta.js";
 
 export type ActionGroupContext = {
 	ctx: RuleCtx;
@@ -15,7 +16,8 @@ export type AnyActionGroupContext = {
 export class ActionGroup<
 	TName extends string,
 	TContext extends ActionGroupContext = AnyActionGroupContext
-> {
+> implements IMeta
+{
 	private _name: TName;
 	private _title: string | null = null;
 	private _description: string | null = null;

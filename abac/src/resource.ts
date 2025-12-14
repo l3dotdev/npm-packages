@@ -7,6 +7,7 @@ import type {
 	UnionToResourceMap
 } from "./internal/collections.js";
 import type { Expand, UnsetMarker } from "./internal/core.js";
+import type { IMeta } from "./internal/meta.js";
 
 export type ResourceContext = {
 	ctx: RuleCtx;
@@ -22,7 +23,9 @@ export type AnyResourceContext = {
 	ownable: boolean;
 };
 
-export class Resource<TName extends string, TContext extends ResourceContext = AnyResourceContext> {
+export class Resource<TName extends string, TContext extends ResourceContext = AnyResourceContext>
+	implements IMeta
+{
 	private _name: TName;
 	private _title: string | null = null;
 	private _description: string | null = null;
