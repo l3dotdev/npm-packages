@@ -7,17 +7,11 @@ import { ok, type Ok } from "./ok.js";
 import { pipe } from "./pipe.js";
 import { pipeAsync } from "./pipeAsync.js";
 import type { ReturnResult } from "./result.types.js";
+import { unwrap, unwrapOrDefault } from "./unwrap.js";
 
 export * from "./ok.js";
 export * from "./err.js";
 export * from "./result.types.js";
-
-function unwrapOrDefault<
-	TResult extends ReturnResult<any, any>,
-	TValue = TResult extends Ok<infer TValue> ? TValue : never
->(result: TResult, defaultValue: NoInfer<TValue>): TValue {
-	return result.ok ? result.value : defaultValue;
-}
 
 function isOk<TResult extends ReturnResult<any, any>>(
 	result: TResult
@@ -39,6 +33,7 @@ export const Result = {
 	fn,
 	from,
 	fromPromise,
+	unwrap,
 	unwrapOrDefault,
 	all,
 	allAsync,
