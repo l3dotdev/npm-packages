@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/result",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"description": "Type-safe result-based error handling",
 	"type": "module",
 	"main": "./build/index.js",
@@ -27,6 +27,7 @@
 		"build"
 	],
 	"scripts": {
+		"test": "vitest --typecheck",
 		"build": "tsc -p tsconfig.json",
 		"package": "pnpm build",
 		"prepublishOnly": "pnpm package"
@@ -40,5 +41,8 @@
 	},
 	"dependencies": {
 		"zod": "^4.1.12"
+	},
+	"devDependencies": {
+		"vitest": "^4.0.16"
 	}
 }
