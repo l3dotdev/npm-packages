@@ -1,4 +1,4 @@
-import { all, allAsync, allErrors, allSettledAsync, allValues } from "./all.js";
+import { all, allAsync, allErrors, allValues } from "./all.js";
 import { err, type Err } from "./err.js";
 import { fn } from "./fn.js";
 import { from } from "./from.js";
@@ -37,7 +37,6 @@ export const Result = {
 	unwrapOrDefault,
 	all,
 	allAsync,
-	allSettledAsync,
 	allValues,
 	allErrors,
 	isOk,
