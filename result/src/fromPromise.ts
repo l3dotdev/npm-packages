@@ -11,8 +11,8 @@ export async function fromPromise<
 	TContext extends object,
 	TError = Error
 >(
-	config: { onError: { type: TType; context?: TContext } },
-	promise: TPromise
+	promise: TPromise,
+	config: { onError: { type: TType; context?: TContext } }
 ): Promise<
 	ReturnResult<Awaited<TPromise>, ResultErrorDefinition<TType, TContext & { error: TError }>>
 >;
@@ -21,8 +21,8 @@ export async function fromPromise<
 	const TType extends string,
 	TError = Error
 >(
-	config: TType,
-	promise: TPromise
+	promise: TPromise,
+	config: TType
 ): Promise<ReturnResult<Awaited<TPromise>, ResultErrorDefinition<TType, { error: TError }>>>;
 export async function fromPromise<
 	TPromise extends Promise<any>,
@@ -30,18 +30,11 @@ export async function fromPromise<
 	TContext extends object,
 	TError = Error
 >(
-	configOrPromise: string | { onError: { type: TType; context?: TContext } } | TPromise,
-	promise?: TPromise
+	promise: TPromise,
+	config?: string | { onError: { type: TType; context?: TContext } }
 ): Promise<
 	ReturnResult<Awaited<TPromise>, ResultErrorDefinition<TType, TContext & { error: TError }>>
 > {
-	let config: string | { onError: { type: TType; context?: TContext } } | null = null;
-	if (!promise && configOrPromise instanceof Promise) {
-		promise = configOrPromise;
-	} else if (!(configOrPromise instanceof Promise)) {
-		config = configOrPromise;
-	}
-
 	try {
 		const value = await promise!;
 		return ok(value);
