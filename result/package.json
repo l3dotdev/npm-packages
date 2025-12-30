@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/result",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"description": "Type-safe result-based error handling",
 	"type": "module",
 	"main": "./build/index.js",

@@ -11,7 +11,7 @@ export type UnwrapResult<TResult extends ReturnResult<any, any>> =
 export function unwrap<TResult extends ReturnResult<any, any>>(
 	result: TResult
 ): UnwrapResult<TResult> {
-	if (result.ok && typeof result.value === "object" && "ok" in result.value) {
+	if (result.ok && result.value && typeof result.value === "object" && "ok" in result.value) {
 		return unwrap(result.value);
 	}
 	return result as UnwrapResult<TResult>;

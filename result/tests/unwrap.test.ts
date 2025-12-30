@@ -9,6 +9,12 @@ describe("Unwrap tests", () => {
 			expect(Result.unwrap(result)).toEqual(result);
 		});
 
+		it("should be able to unwrap a result with a null value", () => {
+			const result = Result.ok(null);
+
+			expect(Result.unwrap(result)).toEqual(result);
+		});
+
 		it("should return the same err result", () => {
 			const result = Result.err("ERROR");
 
