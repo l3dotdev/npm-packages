@@ -1,6 +1,6 @@
 {
 	"name": "@l3dev/abac",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Type-safe attribute-based access control library",
 	"type": "module",
 	"main": "./build/index.js",
