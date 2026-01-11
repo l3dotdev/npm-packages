@@ -16,7 +16,7 @@ export type PolicyMatchPredicate = (ctx: MatchCtx) => boolean;
 
 type InferRulePredicateReturn<TAction> =
 	TAction extends Action<any, infer TContext extends ActionContext>
-		? TContext["configurable"] extends true
+		? "configurable" extends TContext["tags"]
 			? "ifgranted" | boolean
 			: boolean
 		: boolean;

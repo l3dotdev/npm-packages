@@ -39,7 +39,7 @@ const OrganisationABAC = ABAC.createResource("organisation")
 	.withObject<Organisation>()
 	.setActions([
 		ABAC.createAction("create").withoutObject(),
-		ABAC.createAction("view.public"),
+		ABAC.createAction("view.public").addTag("public"),
 		ABAC.createAction("join")
 			.setTitle("Allow Joining")
 			.setDescription("Allow users to join the organisation")
@@ -62,6 +62,26 @@ export const abac = ABAC.create([OrganisationABAC])
 			.allow("organisation.*", ABAC.Filter.ifgranted())
 			.allow("organisation:delete", (ctx) => ctx.subject.id === ctx.object.owner.id)
 	);
+
+// Getting tagged actions
+
+abac.getTaggedActions("public");
+/* [
+	{
+		path: "organisation:view.public",
+		action: ...,
+		own: false
+	}
+] */
+
+abac.getTaggedActions("configurable");
+/* [
+	{
+		path: "organisation:join",
+		action: ...,
+		own: false
+	}
+] */
 
 // Checking permissions
 
@@ -90,9 +110,9 @@ const myOrganisation: Organisation = {
 	owner: myUser
 };
 
-abac.can(myUser, "organisation:delete").granted({ object: myOrganisation }); // true
+abac.can(myUser, "organisation:delete").granted(myOrganisation); // true
 
-abac.can(otherUser, "organisation:delete").granted({ object: myOrganisation }); // false
+abac.can(otherUser, "organisation:delete").granted(myOrganisation); // false
 
-abac.can(adminUser, "organisation:delete").granted({ object: myOrganisation }); // true
+abac.can(adminUser, "organisation:delete").granted(myOrganisation); // true
 ```

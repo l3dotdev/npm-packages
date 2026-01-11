@@ -1,4 +1,4 @@
-import { Action, type RuleCtx, type InferActionSubject } from "./action.js";
+import { Action, type RuleCtx, type InferActionSubject, type ActionTag } from "./action.js";
 import { ActionGroup } from "./actionGroup.js";
 import { ActionVisitor } from "./actionVisitor.js";
 import type { ResourceMap, UnionToResourceMap } from "./internal/collections.js";
@@ -10,18 +10,18 @@ import { Policy } from "./policy.js";
 import { PolicyFilters } from "./policyFilters.js";
 import { Resource } from "./resource.js";
 
-export type ConfigurableAction = {
+export type TaggedAction = {
 	path: string;
 	action: Action<any, any>;
 	own: boolean;
 };
 
-type ConfigurableActionGroup = {
+type TaggedActionGroup = {
 	meta: IMeta;
-	children: ConfigurableActionTreeNode[];
+	children: TaggedActionTreeNode[];
 };
 
-export type ConfigurableActionTreeNode = ConfigurableAction | ConfigurableActionGroup;
+export type TaggedActionTreeNode = TaggedAction | TaggedActionGroup;
 
 export class ABAC<TResources extends ResourceMap> {
 	private _resourceMap: TResources;
@@ -33,38 +33,42 @@ export class ABAC<TResources extends ResourceMap> {
 
 	declare public $resources: TResources;
 	declare public $actions: ActionPaths<TResources>;
-	declare public $configurableActions: FilterActionPaths<TResources, any, true>;
+	declare public $taggedActions: <TTag extends ActionTag>() => FilterActionPaths<
+		TResources,
+		any,
+		TTag
+	>;
 	declare public $filterActions: <TCtx>() => FilterActionPaths<TResources, TCtx>;
 
-	public getConfigurableActions() {
-		const actions: ConfigurableAction[] = [];
+	public getTaggedActions(tag: ActionTag) {
+		const actions: TaggedAction[] = [];
 
 		const visitor = new ActionVisitor(this._resourceMap);
 		visitor.traverse(({ action, resource, path }) => {
-			if (!action.configurable) {
+			if (!action.tags.has(tag)) {
 				return;
 			}
 
 			actions.push({
 				path,
 				action,
-				own: resource.ownable && resource.ownConfigurable && !action.noObject
+				own: resource.ownable && !action.noObject
 			});
 		});
 
 		return actions;
 	}
 
-	public getConfigurableActionsTree() {
-		const nodeMap = new Map<string, ConfigurableActionGroup>();
+	public getTaggedActionsTree(tag: ActionTag) {
+		const nodeMap = new Map<string, TaggedActionGroup>();
 		const root = {
 			children: []
-		} as unknown as ConfigurableActionGroup;
+		} as unknown as TaggedActionGroup;
 		nodeMap.set("", root);
 
 		const visitor = new ActionVisitor(this._resourceMap);
 		visitor.traverse(({ action, resource, path, stack }) => {
-			if (!action.configurable) {
+			if (!action.tags.has(tag)) {
 				return;
 			}
 
@@ -89,7 +93,7 @@ export class ABAC<TResources extends ResourceMap> {
 			parent.children.push({
 				path,
 				action,
-				own: resource.ownable && resource.ownConfigurable && !action.noObject
+				own: resource.ownable && !action.noObject
 			});
 		});
 
@@ -151,7 +155,7 @@ export class ABAC<TResources extends ResourceMap> {
 		TName extends string,
 		TCtx extends RuleCtx = { subject: UnsetMarker; object: UnsetMarker }
 	>(name: TName) {
-		return new Action<TName, { ctx: TCtx; configurable: false }>(name);
+		return new Action<TName, { ctx: TCtx; tags: UnsetMarker }>(name);
 	}
 
 	public static createActionGroup<

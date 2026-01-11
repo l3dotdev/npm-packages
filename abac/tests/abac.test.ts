@@ -4,7 +4,7 @@ import { ABAC } from "../src/abac";
 describe("ABAC tests", () => {
 	it("should return a the correct list of configurable actions", () => {
 		const abac = createABAC();
-		const actions = abac.getConfigurableActions();
+		const actions = abac.getTaggedActions("configurable");
 
 		expect(actions).toEqual([
 			{
@@ -60,7 +60,7 @@ describe("ABAC tests", () => {
 
 	it("should return the correct configurable actions tree", () => {
 		const abac = createABAC();
-		const tree = abac.getConfigurableActionsTree();
+		const tree = abac.getTaggedActionsTree("configurable");
 
 		expect(tree).toEqual([
 			{
@@ -137,6 +137,22 @@ describe("ABAC tests", () => {
 			}
 		]);
 	});
+
+	it("should return the actions tagged as public", () => {
+		const abac = createABAC();
+		const actions = abac.getTaggedActions("public");
+
+		expect(actions).toEqual([
+			{
+				path: "user:info.public",
+				own: false,
+				action: expect.objectContaining({
+					_name: "info.public",
+					_title: "Get public user info"
+				})
+			}
+		]);
+	});
 });
 
 function createABAC() {
@@ -145,7 +161,10 @@ function createABAC() {
 			.setTitle("Users")
 			.setActions([
 				ABAC.createAction("info").setTitle("Get user info").setConfigurable(true),
-				ABAC.createAction("info.public").setTitle("Get public user info").setConfigurable(true),
+				ABAC.createAction("info.public")
+					.setTitle("Get public user info")
+					.setConfigurable(true)
+					.addTag("public"),
 				ABAC.createAction("delete").setTitle("Delete user")
 			]),
 		ABAC.createResource("shop")

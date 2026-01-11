@@ -1,4 +1,4 @@
-import type { MakeOptional } from "./internal/core.js";
+import type { Expand, MakeOptional, UnsetMarker } from "./internal/core.js";
 import type { IMeta } from "./internal/meta.js";
 
 export type RuleCtx = {
@@ -8,7 +8,7 @@ export type RuleCtx = {
 
 export type ActionContext = {
 	ctx: RuleCtx;
-	configurable: boolean;
+	tags: any;
 };
 
 export type InferActionRuleCtx<TAction> =
@@ -26,11 +26,13 @@ export type InferActionAdditionalContext<TAction> = Omit<
 	"subject" | "object"
 >;
 
+export type ActionTag = "configurable" | (string & {});
+
 export class Action<TName extends string, TContext extends ActionContext> implements IMeta {
 	private _name: TName;
 	private _title: string | null = null;
 	private _description: string | null = null;
-	private _configurable: boolean = false;
+	private _tags: Set<TContext["tags"]> = new Set();
 	private _noObject: boolean = false;
 
 	constructor(name: TName) {
@@ -59,17 +61,38 @@ export class Action<TName extends string, TContext extends ActionContext> implem
 		return this;
 	}
 
-	public get configurable(): boolean {
-		return this._configurable;
+	public get tags(): Set<TContext["tags"]> {
+		return this._tags;
 	}
 
-	public setConfigurable<TConfigurable extends boolean>(configurable: TConfigurable) {
-		this._configurable = configurable;
+	public addTag<TTag extends ActionTag>(tag: TTag) {
+		this._tags.add(tag);
 		return this as Action<
 			TName,
 			{
 				ctx: TContext["ctx"];
-				configurable: TConfigurable;
+				tags: TContext["tags"] extends UnsetMarker ? TTag : TContext["tags"] | TTag;
+			}
+		>;
+	}
+
+	public setConfigurable<TConfigurable extends boolean>(configurable: TConfigurable) {
+		if (configurable) {
+			this._tags.add("configurable");
+		} else {
+			this._tags.delete("configurable");
+		}
+		return this as Action<
+			TName,
+			{
+				ctx: TContext["ctx"];
+				tags: TContext["tags"] extends UnsetMarker
+					? TConfigurable extends true
+						? "configurable"
+						: UnsetMarker
+					: TConfigurable extends true
+						? TContext["tags"] | "configurable"
+						: Exclude<TContext["tags"], "configurable">;
 			}
 		>;
 	}
@@ -82,7 +105,7 @@ export class Action<TName extends string, TContext extends ActionContext> implem
 					subject: TOverrideSubject;
 					object: TContext["ctx"]["object"];
 				};
-				configurable: TContext["configurable"];
+				tags: TContext["tags"];
 			}
 		>;
 	}
@@ -95,7 +118,7 @@ export class Action<TName extends string, TContext extends ActionContext> implem
 					subject: TContext["ctx"]["subject"];
 					object: TOverrideObject;
 				};
-				configurable: TContext["configurable"];
+				tags: TContext["tags"];
 			}
 		>;
 	}
@@ -114,6 +137,12 @@ export class Action<TName extends string, TContext extends ActionContext> implem
 	}
 
 	public withAdditionalContext<TAdditionalContext extends object>() {
-		return this as unknown as Action<TName, TContext & TAdditionalContext>;
+		return this as unknown as Action<
+			TName,
+			{
+				ctx: Expand<TContext["ctx"] & TAdditionalContext>;
+				tags: TContext["tags"];
+			}
+		>;
 	}
 }

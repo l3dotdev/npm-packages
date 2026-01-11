@@ -30,7 +30,6 @@ export class Resource<TName extends string, TContext extends ResourceContext = A
 	private _title: string | null = null;
 	private _description: string | null = null;
 	private _ownable: TContext["ownable"] = false;
-	private _ownConfigurable: boolean = false;
 	private _actions: TContext["actions"] = {} as TContext["actions"];
 	private _subResources: TContext["subResources"] = {} as TContext["subResources"];
 
@@ -64,13 +63,8 @@ export class Resource<TName extends string, TContext extends ResourceContext = A
 		return this._ownable;
 	}
 
-	public get ownConfigurable(): boolean {
-		return this._ownConfigurable;
-	}
-
-	public setOwnable<TOwnable extends boolean>(ownable: TOwnable, configurable = true) {
+	public setOwnable<TOwnable extends boolean>(ownable: TOwnable) {
 		this._ownable = ownable;
-		this._ownConfigurable = configurable;
 		return this as unknown as Resource<
 			TName,
 			{
@@ -118,7 +112,7 @@ export class Resource<TName extends string, TContext extends ResourceContext = A
 		return this as unknown as Resource<
 			TName,
 			{
-				ctx: TContext["ctx"] & TAdditionalContext;
+				ctx: Expand<TContext["ctx"] & TAdditionalContext>;
 				actions: TContext["actions"];
 				subResources: TContext["subResources"];
 				ownable: TContext["ownable"];

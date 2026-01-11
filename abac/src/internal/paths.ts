@@ -93,7 +93,8 @@ type MergeRuleCtx<A extends RuleCtx, B extends RuleCtx> = {
 		: A["object"] extends OptionalMarker
 			? MakeOptional<B["object"]>
 			: A["object"];
-};
+} & Omit<A, "subject" | "object"> &
+	Omit<B, "subject" | "object">;
 
 type ResolveAction<TParentCtx extends RuleCtx, TAction extends Action<any, any>> =
 	TAction extends Action<infer TName, infer TActionContext>
@@ -101,7 +102,7 @@ type ResolveAction<TParentCtx extends RuleCtx, TAction extends Action<any, any>>
 				TName,
 				Expand<{
 					ctx: Expand<MergeRuleCtx<TActionContext["ctx"], TParentCtx>>;
-					configurable: TActionContext["configurable"];
+					tags: TActionContext["tags"];
 				}>
 			>
 		: never;
@@ -198,11 +199,11 @@ type ActionPathsWithAction<TResources extends ResourceMap, TPaths extends string
 export type FilterActionPaths<
 	TResources extends ResourceMap,
 	TCtxPattern,
-	TConfigurable extends boolean = boolean,
+	TTag extends string = any,
 	TPathsAndActions = ActionPathsWithAction<TResources, ActionPaths<TResources>>
 > = TPathsAndActions extends { path: string; action: Action<any, infer TActionContext> }
 	? TActionContext["ctx"] extends TCtxPattern
-		? TActionContext["configurable"] extends TConfigurable
+		? TTag extends TActionContext["tags"]
 			? TPathsAndActions["path"]
 			: never
 		: never

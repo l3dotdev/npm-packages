@@ -81,7 +81,7 @@ export class ActionGroup<
 		return this as unknown as ActionGroup<
 			TName,
 			{
-				ctx: TContext["ctx"] & TAdditionalContext;
+				ctx: Expand<TContext["ctx"] & TAdditionalContext>;
 				actions: TContext["actions"];
 			}
 		>;
