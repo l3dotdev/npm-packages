@@ -91,53 +91,75 @@ export class Policy<TResources extends ResourceMap> {
 
 	public allow<TActionPath extends WildcardActionPaths<TResources>>(
 		action: TActionPath,
-		predicate?: AnyRulePredicate
+		predicate?: AnyRulePredicate,
+		options?: { specitivity?: Specitivity }
 	): this;
 	public allow<TActionPath extends ActionPaths<TResources>>(
 		action: TActionPath,
-		predicate: SimplifyPredicate<RulePredicate<TResources, TActionPath>>
+		predicate: SimplifyPredicate<RulePredicate<TResources, TActionPath>>,
+		options?: { specitivity?: Specitivity }
 	): this;
-	public allow(action: string, predicate?: any) {
-		this.pushRule(action, predicate ?? ABAC.Filter.allow());
+	public allow(
+		action: string,
+		predicate?: any,
+		{ specitivity }: { specitivity?: Specitivity } = {}
+	) {
+		this.pushRule(action, predicate ?? ABAC.Filter.allow(), specitivity);
 		return this;
 	}
 
 	public allowOwn<TActionPath extends OwnableActionPaths<TResources>>(
 		action: TActionPath,
 		checkOwnership: SimplifyPredicate<OwnershipPredicate<TResources, TActionPath>>,
-		predicate?: SimplifyPredicate<RulePredicate<TResources, TActionPath>>
+		predicate?: SimplifyPredicate<RulePredicate<TResources, TActionPath>>,
+		{ specitivity }: { specitivity?: Specitivity } = {}
 	) {
-		this.pushRule(`${action}.own`, ABAC.Filter.allow());
-		this.pushRule(action, (ctx: any, action: any) => {
-			if (!checkOwnership(ctx)) {
-				return false;
-			}
+		this.pushRule(`${action}.own`, ABAC.Filter.allow(), specitivity);
+		this.pushRule(
+			action,
+			(ctx: any, action: any) => {
+				if (!checkOwnership(ctx)) {
+					return false;
+				}
 
-			return (predicate ?? ABAC.Filter.allow())(ctx, action);
-		});
+				return (predicate ?? ABAC.Filter.allow())(ctx, action);
+			},
+			specitivity
+		);
 		return this;
 	}
 
-	public deny<TActionPath extends WildcardActionPaths<TResources>>(action: TActionPath): this;
-	public deny<TActionPath extends ActionPaths<TResources>>(action: TActionPath): this;
-	public deny(action: string) {
-		this.pushRule(action, ABAC.Filter.deny());
+	public deny<TActionPath extends WildcardActionPaths<TResources>>(
+		action: TActionPath,
+		options?: { specitivity?: Specitivity }
+	): this;
+	public deny<TActionPath extends ActionPaths<TResources>>(
+		action: TActionPath,
+		options?: { specitivity?: Specitivity }
+	): this;
+	public deny(action: string, { specitivity }: { specitivity?: Specitivity } = {}) {
+		this.pushRule(action, ABAC.Filter.deny(), specitivity);
 		return this;
 	}
 
 	public denyOwn<TActionPath extends OwnableActionPaths<TResources>>(
 		action: TActionPath,
 		checkOwnership: SimplifyPredicate<OwnershipPredicate<TResources, TActionPath>>,
-		otherPredicate?: SimplifyPredicate<RulePredicate<TResources, TActionPath>>
+		otherPredicate?: SimplifyPredicate<RulePredicate<TResources, TActionPath>>,
+		{ specitivity }: { specitivity?: Specitivity } = {}
 	) {
-		this.pushRule(`${action}.own`, ABAC.Filter.deny());
-		this.pushRule(action, (ctx: any, action: any) => {
-			if (checkOwnership(ctx)) {
-				return false;
-			}
+		this.pushRule(`${action}.own`, ABAC.Filter.deny(), specitivity);
+		this.pushRule(
+			action,
+			(ctx: any, action: any) => {
+				if (checkOwnership(ctx)) {
+					return false;
+				}
 
-			return (otherPredicate ?? ABAC.Filter.allow())(ctx, action);
-		});
+				return (otherPredicate ?? ABAC.Filter.allow())(ctx, action);
+			},
+			specitivity
+		);
 		return this;
 	}
 
