@@ -11,6 +11,7 @@ import type { ResourceMap } from "./internal/collections.js";
 import type {
 	EmptyObject,
 	Expand,
+	HasOnlyObject,
 	IsOnlyEmptyObject,
 	OptionalUndefinedFields
 } from "./internal/core.js";
@@ -37,14 +38,23 @@ type Granted<
 				granted(): boolean;
 				test(): PermissionTestResult;
 			}
-		: {
-				granted(
-					ctx: OptionalUndefinedFields<TCtx extends EmptyObject ? Omit<TCtx, "object"> : TCtx>
-				): boolean;
-				test(
-					ctx: OptionalUndefinedFields<TCtx extends EmptyObject ? Omit<TCtx, "object"> : TCtx>
-				): PermissionTestResult;
-			};
+		: TCtx extends { object: infer TObject }
+			? HasOnlyObject<TCtx> extends true
+				? {
+						granted(object: TObject): boolean;
+						test(object: TObject): PermissionTestResult;
+					}
+				: {
+						granted(
+							object: TObject,
+							additionalContext: OptionalUndefinedFields<Omit<TCtx, "object">>
+						): boolean;
+						test(
+							object: TObject,
+							additionalContext: OptionalUndefinedFields<Omit<TCtx, "object">>
+						): PermissionTestResult;
+					}
+			: never;
 
 type Filter<
 	TAction extends Action<any, any>,
@@ -59,7 +69,7 @@ type Filter<
 			: {
 					filter(
 						objects: TObjects,
-						ctx: OptionalUndefinedFields<InferActionAdditionalContext<TAction>>
+						additionalContext: OptionalUndefinedFields<InferActionAdditionalContext<TAction>>
 					): TObjects;
 				};
 
@@ -138,11 +148,13 @@ export class Permission<TActionPath extends string, TAction extends Action<any, 
 	}
 
 	public test(
-		ctx?: OptionalUndefinedFields<Omit<InferActionRuleCtx<TAction>, "subject">>
+		object?: InferActionObject<TAction>,
+		additionalContext?: OptionalUndefinedFields<InferActionAdditionalContext<TAction>>
 	): PermissionTestResult {
-		const fullCtx = {
-			...(ctx ?? {}),
-			subject: this._subject
+		const ctx = {
+			object,
+			subject: this._subject,
+			...additionalContext
 		} as unknown as InferActionRuleCtx<TAction>;
 
 		let granted = false;
@@ -150,11 +162,18 @@ export class Permission<TActionPath extends string, TAction extends Action<any, 
 		let grantPolicy: Policy<any> | null = null;
 		let grantRule: Rule | null = null;
 
-		const ownsObject = this.checkOwnership(fullCtx);
-		const isGranted =
-			!this._action.configurable ||
-			this.isGranted(this._path, fullCtx.object) ||
-			(ownsObject && this.isGranted(this._path + ".own", fullCtx.object));
+		let isGranted = !this._action.tags.has("configurable");
+		if (!this._path.endsWith(".own")) {
+			isGranted ||= this.isGranted(this._path, ctx.object);
+		}
+
+		const ownsObject = this.checkOwnership(ctx);
+		if (ownsObject) {
+			isGranted ||= this.isGranted(
+				this._path + (this._path.endsWith(".own") ? "" : ".own"),
+				ctx.object
+			);
+		}
 
 		for (const policy of this._policies) {
 			for (const rule of policy.rules) {
@@ -163,7 +182,7 @@ export class Permission<TActionPath extends string, TAction extends Action<any, 
 					continue;
 				}
 
-				const result = rule.predicate(fullCtx, this._action);
+				const result = rule.predicate(ctx, this._action);
 				granted = result === "ifgranted" ? isGranted : result;
 				specitivity = rule.specitivity ?? match.specitivity;
 				grantPolicy = policy;
@@ -186,22 +205,22 @@ export class Permission<TActionPath extends string, TAction extends Action<any, 
 		};
 	}
 
-	public granted(ctx?: OptionalUndefinedFields<Omit<InferActionRuleCtx<TAction>, "subject">>) {
-		const { granted } = this.test(ctx);
+	public granted(
+		object?: InferActionObject<TAction>,
+		additionalContext?: OptionalUndefinedFields<InferActionAdditionalContext<TAction>>
+	) {
+		const { granted } = this.test(object, additionalContext);
 		return granted;
 	}
 
 	public filter(
 		objects: InferActionObject<TAction>[],
-		ctx?: InferActionAdditionalContext<TAction>
+		additionalContext?: OptionalUndefinedFields<InferActionAdditionalContext<TAction>>
 	) {
 		return objects
 			.map((object) => ({
 				object,
-				granted: this.granted({
-					object,
-					...(ctx ?? {})
-				} as any)
+				granted: this.granted(object, additionalContext)
 			}))
 			.filter(({ granted }) => granted)
 			.map(({ object }) => object);

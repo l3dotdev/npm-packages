@@ -33,3 +33,5 @@ export type EmptyObject = { object: void };
 
 export type IsOnlyEmptyObject<T> =
 	KeysEqual<EmptyObject, T> extends true ? (T extends EmptyObject ? true : false) : false;
+
+export type HasOnlyObject<T> = KeysEqual<{ object: any }, T>;
