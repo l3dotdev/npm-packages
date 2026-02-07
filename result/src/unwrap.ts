@@ -4,7 +4,9 @@ import type { ReturnResult } from "./result.types";
 export type UnwrapResult<TResult extends ReturnResult<any, any>> =
 	TResult extends Ok<infer TValue>
 		? TValue extends ReturnResult<any, any>
-			? UnwrapResult<TValue>
+			? 0 extends 1 & TValue
+				? TResult
+				: UnwrapResult<TValue>
 			: TResult
 		: TResult;
 
