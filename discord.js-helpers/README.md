@@ -1,5 +1,10 @@
 # discord.js-helpers
 
+> `@l3dev/discord.js-helpers` is deprecated.
+> You should use `discordthing` as the new alternative.
+>
+> See [discordthing](https://github.com/l3dotdev/discordthing) for more information.
+
 ## Description
 
 A lightweight framework and collection of helpers for building a discord bot with [`discord.js`](https://www.npmjs.com/package/discord.js)
