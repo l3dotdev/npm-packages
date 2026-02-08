@@ -14,7 +14,6 @@ body:
       multiple: true
       options:
         - api-result
-        - discord.js-helpers
         - drizzle-helpers
         - event-buses
         - logger

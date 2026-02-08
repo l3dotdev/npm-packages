@@ -95,7 +95,7 @@ export default tseslint.config(
 		}
 	},
 	{
-		files: ["discord.js-helpers/**/*.ts", "result/**/*.ts", "api-result/**/*.ts"],
+		files: ["result/**/*.ts", "api-result/**/*.ts"],
 		rules: {
 			"import/extensions": ["error", "always", { ts: "never" }]
 		}
