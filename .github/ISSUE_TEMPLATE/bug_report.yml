@@ -13,10 +13,10 @@ body:
       description: Which package(s) are relevant for this bug report?
       multiple: true
       options:
+        - abac
         - api-result
         - drizzle-helpers
         - event-buses
-        - logger
         - mixins
         - result
         - svelte-api

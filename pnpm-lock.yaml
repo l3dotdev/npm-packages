@@ -67,7 +67,7 @@ importers:
     dependencies:
       '@l3dev/logger':
         specifier: ^0.3.1
-        version: link:../logger
+        version: 0.3.1
       '@l3dev/result':
         specifier: ^0.5.0
         version: 0.5.0
@@ -79,15 +79,13 @@ importers:
     dependencies:
       '@l3dev/logger':
         specifier: ^0.3.0
-        version: link:../logger
+        version: 0.3.1
       bullmq:
         specifier: ^5.53.2
         version: 5.53.2
       cron-time-generator:
         specifier: ^2.0.3
         version: 2.0.3
-
-  logger: {}
 
   mixins: {}
 
@@ -363,6 +361,10 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@l3dev/logger@0.3.1':
+    resolution: {integrity: sha512-QiBr05GTFk8DGY99+JVSx6DBT8mWNUxThez6Mk9oOR4zcpP/mWzVQ+a5z2a1hEXIuVjCrm2emQxn6avcuOFt7g==}
+    deprecated: 'This package is no longer maintained. Please use a recommended alternative: pino, tslog, winston'
 
   '@l3dev/result@0.5.0':
     resolution: {integrity: sha512-vmBxwffQ9wzqTGi+tH+ykzBCikGKMW4+GoFGxdFJFZ+JQiq5hOlB8BY5swhnmjmEUAdlBnYanaN949B/9DqiYQ==}
@@ -2474,6 +2476,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@l3dev/logger@0.3.1': {}
 
   '@l3dev/result@0.5.0':
     dependencies:
